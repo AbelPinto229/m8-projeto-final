@@ -22,3 +22,20 @@ const getById = async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
+// POST /api/clients
+const create = async (req, res) => {
+  try {
+    const { company_name, contact_email, logo_url, social_networks } = req.body;
+    if (!company_name) return res.status(400).json({ error: 'Nome da empresa é obrigatório' });
+
+    const [result] = await db.query(
+      'INSERT INTO clients (company_name, contact_email, logo_url, social_networks) VALUES (?, ?, ?, ?)',
+      [company_name, contact_email || null, logo_url || null, social_networks || null]
+    );
+    res.status(201).json({ id: result.insertId, company_name, contact_email, logo_url, social_networks });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
