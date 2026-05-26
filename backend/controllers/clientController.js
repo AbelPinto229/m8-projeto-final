@@ -6,6 +6,7 @@ const getAll = async (req, res) => {
     const [rows] = await db.query('SELECT * FROM clients ORDER BY created_at DESC');
     res.json(rows);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
@@ -17,6 +18,7 @@ const getById = async (req, res) => {
     if (rows.length === 0) return res.status(404).json({ error: 'Cliente não encontrado' });
     res.json(rows[0]);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
