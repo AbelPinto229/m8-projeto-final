@@ -43,11 +43,22 @@ const create = async (req, res) => {
 
 // PUT /api/clients/:id
 const update = async (req, res) => {
-  try { 
+  try {
     const { company_name, contact_email, logo_url, social_networks } = req.body;
     const [result] = await db.query(
-      'UPDATE clients SET company_name = ?, contact_email = ?, logo_url = ?, social_networks = ? WHERE id = ?',
-      [company_name, contact_email, logo_url, social_networks, req.params.id]
+      `UPDATE clients SET
+        company_name    = COALESCE(?, company_name),
+        contact_email   = COALESCE(?, contact_email),
+        logo_url        = COALESCE(?, logo_url),
+        social_networks = COALESCE(?, social_networks)
+       WHERE id = ?`,
+      [
+        company_name ?? null,
+        contact_email ?? null,
+        logo_url ?? null,
+        social_networks ?? null,
+        req.params.id,
+      ]
     );
     if (result.affectedRows === 0) return res.status(404).json({ error: 'Cliente não encontrado' });
     res.json({ message: 'Cliente actualizado com sucesso' });
