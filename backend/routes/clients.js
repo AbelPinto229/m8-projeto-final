@@ -7,6 +7,7 @@ const clientController = require('../controllers/clientController');
 router.get('/',       clientController.getAll);
 router.get('/:id',    clientController.getById);
 router.post('/',      clientController.create);
+router.put('/:id',    clientController.update);
 
 
 module.exports = router;

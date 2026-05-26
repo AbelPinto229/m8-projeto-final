@@ -39,3 +39,20 @@ const create = async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
+
+// PUT /api/clients/:id
+const update = async (req, res) => {
+  try {
+    const { company_name, contact_email, logo_url, social_networks } = req.body;
+    const [result] = await db.query(
+      'UPDATE clients SET company_name = ?, contact_email = ?, logo_url = ?, social_networks = ? WHERE id = ?',
+      [company_name, contact_email, logo_url, social_networks, req.params.id]
+    );
+    if (result.affectedRows === 0) return res.status(404).json({ error: 'Cliente não encontrado' });
+    res.json({ message: 'Cliente actualizado com sucesso' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
