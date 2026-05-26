@@ -5,5 +5,6 @@ const router  = express.Router();
 const clientController = require('../controllers/clientController');
 
 router.get('/',       clientController.getAll);
+router.get('/:id',    clientController.getById);
 
 module.exports = router;
