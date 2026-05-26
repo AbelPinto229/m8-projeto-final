@@ -43,7 +43,7 @@ const create = async (req, res) => {
 
 // PUT /api/clients/:id
 const update = async (req, res) => {
-  try {
+  try { 
     const { company_name, contact_email, logo_url, social_networks } = req.body;
     const [result] = await db.query(
       'UPDATE clients SET company_name = ?, contact_email = ?, logo_url = ?, social_networks = ? WHERE id = ?',
@@ -56,3 +56,17 @@ const update = async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
+// DELETE /api/clients/:id
+const remove = async (req, res) => {
+  try {
+    const [result] = await db.query('DELETE FROM clients WHERE id = ?', [req.params.id]);
+    if (result.affectedRows === 0) return res.status(404).json({ error: 'Cliente não encontrado' });
+    res.json({ message: 'Cliente eliminado com sucesso' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+module.exports = { getAll, getById, create, update, remove };
