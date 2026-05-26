@@ -45,6 +45,7 @@ const create = async (req, res) => {
 const update = async (req, res) => {
   try {
     const { company_name, contact_email, logo_url, social_networks } = req.body;
+    if (company_name === '') return res.status(400).json({ error: 'Nome da empresa não pode ser vazio' });
     const [result] = await db.query(
       `UPDATE clients SET
         company_name    = COALESCE(?, company_name),
