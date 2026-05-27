@@ -10,6 +10,7 @@ app.use(express.json());
 app.use('/api/clients', require('./routes/clients'));
 app.use('/api/cards', require('./routes/cards'));
 app.use('/api/comments', require('./routes/comments'));
+app.use('/api/metrics', require('./routes/metrics'));
 
 
 const PORT = process.env.PORT || 5000;
