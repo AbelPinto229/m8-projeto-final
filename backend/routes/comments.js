@@ -5,5 +5,7 @@ const router  = express.Router();
 const commentController = require('../controllers/commentController');
 
 router.get('/',    commentController.getByCard);
+router.post('/',   commentController.create);
+
 
 module.exports = router;
