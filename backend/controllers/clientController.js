@@ -45,22 +45,16 @@ const create = async (req, res) => {
 const update = async (req, res) => {
   try {
     const { company_name, contact_email, logo_url, social_networks } = req.body;
-    if (company_name === '') return res.status(400).json({ error: 'Nome da empresa não pode ser vazio' });
+
+    if (!company_name || !contact_email) {
+      return res.status(400).json({ error: 'Dados em falta ou inválidos' });
+    }
+    
     const [result] = await db.query(
-      `UPDATE clients SET
-        company_name    = COALESCE(?, company_name),
-        contact_email   = COALESCE(?, contact_email),
-        logo_url        = COALESCE(?, logo_url),
-        social_networks = COALESCE(?, social_networks)
-       WHERE id = ?`,
-      [
-        company_name ?? null,
-        contact_email ?? null,
-        logo_url ?? null,
-        social_networks ?? null,
-        req.params.id,
-      ]
+      'UPDATE clients SET company_name = ?, contact_email = ?, logo_url = ?, social_networks = ? WHERE id = ?',
+      [company_name, contact_email, logo_url || null, social_networks || null, req.params.id]
     );
+
     if (result.affectedRows === 0) return res.status(404).json({ error: 'Cliente não encontrado' });
     res.json({ message: 'Cliente actualizado com sucesso' });
   } catch (err) {

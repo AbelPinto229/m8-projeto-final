@@ -50,5 +50,17 @@ const create = async (req, res) => {
   }
 };
 
+// DELETE /api/comments/:id — apagar comentário
+const remove = async (req, res) => {
+  try {
+    const [result] = await db.query('DELETE FROM comments WHERE id = ?', [req.params.id]);
+    if (result.affectedRows === 0) return res.status(404).json({ error: 'Comentário não encontrado' });
+    res.json({ message: 'Comentário eliminado com sucesso' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Ocorreu um erro. Tente novamente mais tarde.' });
+  }
+};
 
-module.exports = { getByCard, create };
+
+module.exports = { getByCard, create, remove };
