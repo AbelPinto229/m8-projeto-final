@@ -7,7 +7,7 @@ const getAll = async (req, res) => {
     res.json(rows);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: 'Ocorreu um erro. Tente novamente mais tarde.' });
   }
 };
 
@@ -19,7 +19,7 @@ const getById = async (req, res) => {
     res.json(rows[0]);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: 'Ocorreu um erro. Tente novamente mais tarde.' });
   }
 };
 
@@ -36,7 +36,7 @@ const create = async (req, res) => {
     res.status(201).json({ id: result.insertId, company_name, contact_email, logo_url, social_networks });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: 'Ocorreu um erro. Tente novamente mais tarde.' });
   }
 };
 
@@ -65,7 +65,7 @@ const update = async (req, res) => {
     res.json({ message: 'Cliente actualizado com sucesso' });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: 'Ocorreu um erro. Tente novamente mais tarde.' });
   }
 };
 
@@ -77,7 +77,7 @@ const remove = async (req, res) => {
     res.json({ message: 'Cliente eliminado com sucesso' });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: 'Ocorreu um erro. Tente novamente mais tarde.' });
   }
 };
 

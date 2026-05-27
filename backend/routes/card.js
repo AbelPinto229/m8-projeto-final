@@ -5,5 +5,6 @@ const router  = express.Router();
 
 router.get('/',           cardController.getAll);
 router.get('/by-client', cardController.getByClient);
+router-get('/:id',        cardController.getById);
 
 module.exports = router;
