@@ -43,4 +43,80 @@ const getById = async (req, res) => {
     res.status(500).json({ error: 'Ocorreu um erro. Tente novamente mais tarde.' });
   }
 };
-module.exports = { getAll, getByClient, getById };
+
+// POST /api/cards — criar card
+const create = async (req, res) => {
+  try {
+    const { client_id, title, body, image_url, social_network, scheduled_date } = req.body;
+
+    if (!client_id || !title || !body || !social_network) {
+      return res.status(400).json({ error: 'Dados em falta ou inválidos' });
+    }
+
+    const [result] = await db.query(
+      'INSERT INTO content_cards (client_id, title, body, image_url, social_network, status, scheduled_date) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [client_id, title, body, image_url || null, social_network, 'in_review', scheduled_date || null]
+    );
+
+    res.status(201).json({
+      id: result.insertId,
+      client_id, title, body, social_network,
+      status: 'in_review',
+      link: `/cliente/${client_id}`
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Ocorreu um erro. Tente novamente mais tarde.' });
+  }
+};
+
+// PUT /api/cards/:id — editar card
+const update = async (req, res) => {
+  try {
+    const { title, body, image_url, social_network, scheduled_date } = req.body;
+    const [result] = await db.query(
+      'UPDATE content_cards SET title = ?, body = ?, image_url = ?, social_network = ?, scheduled_date = ? WHERE id = ?',
+      [title, body, image_url || null, social_network, scheduled_date || null, req.params.id]
+    );
+    if (result.affectedRows === 0) return res.status(404).json({ error: 'Card não encontrado' });
+    res.json({ message: 'Card actualizado com sucesso' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Ocorreu um erro. Tente novamente mais tarde.' });
+  }
+};
+
+// PATCH /api/cards/:id/status — aprovar e publicar
+const updateStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+    const validStatus = ['approved', 'published'];
+    if (!validStatus.includes(status)) {
+      return res.status(400).json({ error: 'Status inválido' });
+    }
+
+    const [result] = await db.query(
+      'UPDATE content_cards SET status = ? WHERE id = ?',
+      [status, req.params.id]
+    );
+    if (result.affectedRows === 0) return res.status(404).json({ error: 'Card não encontrado' });
+    res.json({ message: `Status actualizado para ${status}` });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Ocorreu um erro. Tente novamente mais tarde.' });
+  }
+};
+
+// DELETE /api/cards/:id
+const remove = async (req, res) => {
+  try {
+    const [result] = await db.query('DELETE FROM content_cards WHERE id = ?', [req.params.id]);
+    if (result.affectedRows === 0) return res.status(404).json({ error: 'Card não encontrado' });
+    res.json({ message: 'Card eliminado com sucesso' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Ocorreu um erro. Tente novamente mais tarde.' });
+  }
+};
+
+module.exports = { getAll, getByClient, getById, create, update, updateStatus, remove };
