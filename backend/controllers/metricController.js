@@ -22,4 +22,29 @@ const getByCard = async (req, res) => {
   }
 };
 
-module.exports = { getByCard };
+
+// POST /api/metrics — inserir métricas manualmente
+const create = async (req, res) => {
+  try {
+    const { card_id, reach, likes, comments_count, shares, published_at } = req.body;
+
+    if (!card_id || !published_at) {
+      return res.status(400).json({ error: 'Dados em falta ou inválidos' });
+    }
+
+    const [result] = await db.query(
+      'INSERT INTO metrics (card_id, reach, likes, comments_count, shares, published_at) VALUES (?, ?, ?, ?, ?, ?)',
+      [card_id, reach || 0, likes || 0, comments_count || 0, shares || 0, published_at]
+    );
+
+    res.status(201).json({
+      id: result.insertId,
+      card_id, reach, likes, comments_count, shares, published_at
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Ocorreu um erro. Tente novamente mais tarde.' });
+  }
+};
+
+module.exports = { getByCard, create };
