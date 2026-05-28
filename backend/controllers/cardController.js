@@ -1,6 +1,7 @@
 // backend/controllers/cardController.js
 
 const db = require('../db/connection');
+const aiService = require('../services/aiService');
 
 // GET /api/cards — todos os cards (agência)
 const getAll = async (req, res) => {
@@ -53,15 +54,19 @@ const create = async (req, res) => {
       return res.status(400).json({ error: 'Dados em falta ou inválidos' });
     }
 
+    // Chama a IA para analisar o conteúdo
+    const ai_suggestion = await aiService.analyseContent(title, body, social_network);
+
     const [result] = await db.query(
-      'INSERT INTO content_cards (client_id, title, body, image_url, social_network, status, scheduled_date) VALUES (?, ?, ?, ?, ?, ?, ?)',
-      [client_id, title, body, image_url || null, social_network, 'in_review', scheduled_date || null]
+      'INSERT INTO content_cards (client_id, title, body, image_url, social_network, status, scheduled_date, ai_suggestion) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      [client_id, title, body, image_url || null, social_network, 'in_review', scheduled_date || null, JSON.stringify(ai_suggestion)]
     );
 
     res.status(201).json({
       id: result.insertId,
       client_id, title, body, social_network,
       status: 'in_review',
+      ai_suggestion,
       link: `/cliente/${client_id}`
     });
   } catch (err) {

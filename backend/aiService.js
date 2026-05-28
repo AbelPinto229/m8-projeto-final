@@ -34,8 +34,8 @@ Responde exactamente neste formato:
     return JSON.parse(text);
   } catch (err) {
     console.error('Erro na análise de conteúdo:', err);
-    return null; // se a IA falhar o card é guardado na mesma sem sugestão
-  }
+    throw err
+  }  
 };
 
 module.exports = { analyseContent };
