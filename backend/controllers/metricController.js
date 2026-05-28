@@ -47,4 +47,26 @@ const create = async (req, res) => {
   }
 };
 
-module.exports = { getByCard, create };
+// PUT /api/metrics/:id — actualizar métricas
+const update = async (req, res) => {
+  try {
+    const { reach, likes, comments_count, shares, published_at } = req.body;
+
+    if (!published_at) {
+      return res.status(400).json({ error: 'Dados em falta ou inválidos' });
+    }
+
+    const [result] = await db.query(
+      'UPDATE metrics SET reach = ?, likes = ?, comments_count = ?, shares = ?, published_at = ? WHERE id = ?',
+      [reach || 0, likes || 0, comments_count || 0, shares || 0, published_at, req.params.id]
+     );
+
+    if (result.affectedRows === 0) return res.status(404).json({ error: 'Métricas não encontradas' });
+    res.json({ message: 'Métricas actualizadas com sucesso' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Ocorreu um erro. Tente novamente mais tarde.' });
+  }
+};
+
+module.exports = { getByCard, create, update};

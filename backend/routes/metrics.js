@@ -6,5 +6,6 @@ const metricController = require('../controllers/metricController');
 
 router.get('/',    metricController.getByCard);
 router.post('/',   metricController.create);
+router.put('/',    metricController.update);
 
 module.exports = router;
