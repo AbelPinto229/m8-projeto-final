@@ -55,7 +55,7 @@ const create = async (req, res) => {
     }
 
     // Chama a IA para analisar o conteúdo
-    const ai_suggestion = await aiService.analyseContent(title, body, social_network);
+    const ai_suggestion = await aiService.analyseContent(title, body, social_network, scheduled_date);
 
     const [result] = await db.query(
       'INSERT INTO content_cards (client_id, title, body, image_url, social_network, status, scheduled_date, ai_suggestion) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
@@ -91,21 +91,47 @@ const update = async (req, res) => {
   }
 };
 
-// PATCH /api/cards/:id/status — aprovar e publicar
+// PATCH /api/cards/:id/status
 const updateStatus = async (req, res) => {
   try {
     const { status } = req.body;
     const validStatus = ['approved', 'published'];
+
     if (!validStatus.includes(status)) {
-      return res.status(400).json({ error: 'Status inválido' });
+      return res.status(400).json({ error: 'Dados em falta ou inválidos' });
     }
 
-    const [result] = await db.query(
-      'UPDATE content_cards SET status = ? WHERE id = ?',
-      [status, req.params.id]
-    );
-    if (result.affectedRows === 0) return res.status(404).json({ error: 'Card não encontrado' });
-    res.json({ message: `Status actualizado para ${status}` });
+    // Se for publicado chama a IA para prever métricas
+    if (status === 'published') {
+      // Vai buscar o card para passar à IA
+      const [rows] = await db.query(
+        'SELECT * FROM content_cards WHERE id = ?',
+        [req.params.id]
+      );
+
+      if (rows.length === 0) return res.status(404).json({ error: 'Conteúdo não encontrado' });
+
+      const card = rows[0];
+
+      // Chama a IA para prever métricas
+      const ai_metrics_prediction = await aiService.predictMetrics(card.title, card.body, card.social_network);
+
+      // Actualiza o status para publicado e guarda a previsão
+      await db.query(
+        'UPDATE content_cards SET status = ?, ai_metrics_prediction = ? WHERE id = ?',
+        [status, JSON.stringify(ai_metrics_prediction), req.params.id]
+      );
+
+    } else {
+      // Só actualiza o status para aprovado
+      const [result] = await db.query(
+        'UPDATE content_cards SET status = ? WHERE id = ?',
+        [status, req.params.id]
+      );
+      if (result.affectedRows === 0) return res.status(404).json({ error: 'Conteúdo não encontrado' });
+    }
+
+    res.json({ message: `Estado actualizado para ${status}` });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Ocorreu um erro. Tente novamente mais tarde.' });
