@@ -10,7 +10,7 @@ const client = new Anthropic({
 const analyseContent = async (title, body, social_network, scheduled_date) => {
   try {
     const response = await client.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 1024,
       messages: [
         {
@@ -24,27 +24,27 @@ Data planeada: ${scheduled_date || 'não definida'}
 Responde exactamente neste formato:
 {
   "hashtags": ["hashtag1", "hashtag2", "hashtag3"],
-  "improvements": "sugestão de melhoria do conteúdo",
-  "best_time": "melhor horário para publicar"
+  "improved_content": "reescreve aqui o conteúdo melhorado e optimizado para ${social_network}, pronto a publicar",
+  "best_time": "melhor horário para publicar",
   "date_feedback": "feedback sobre a data planeada vs melhor dia para publicar"
 }`
         }
       ]
     });
 
-    const text = response.content[0].text;
+    const text = response.content[0].text.replace(/```json\n?|\n?```/g, '').trim();
     return JSON.parse(text);
   } catch (err) {
     console.error('Erro na análise de conteúdo:', err);
     throw err;
-  }  
+  }
 };
 
 // Prevê métricas quando o card é publicado
 const predictMetrics = async (title, body, social_network) => {
   try {
     const response = await client.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 1024,
       messages: [
         {
@@ -66,7 +66,7 @@ Responde exactamente neste formato:
       ]
     });
 
-    const text = response.content[0].text;
+    const text = response.content[0].text.replace(/```json\n?|\n?```/g, '').trim();
     return JSON.parse(text);
   } catch (err) {
     console.error('Erro na previsão de métricas:', err);
