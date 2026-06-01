@@ -27,7 +27,7 @@ const getById = async (req, res) => {
 const create = async (req, res) => {
   try {
     const { company_name, contact_email, logo_url, social_networks } = req.body;
-    if (!company_name) return res.status(400).json({ error: 'Nome da empresa é obrigatório' });
+    if (!company_name || !contact_email || !social_networks) return res.status(400).json({ error: 'Dados em falta ou inválidos' });
 
     const [result] = await db.query(
       'INSERT INTO clients (company_name, contact_email, logo_url, social_networks) VALUES (?, ?, ?, ?)',
@@ -46,13 +46,17 @@ const update = async (req, res) => {
   try {
     const { company_name, contact_email, logo_url, social_networks } = req.body;
 
-    if (!company_name || !contact_email) {
+    if (!company_name || !contact_email || !social_networks) {
       return res.status(400).json({ error: 'Dados em falta ou inválidos' });
     }
     
+    const [existing] = await db.query('SELECT * FROM clients WHERE id = ?', [req.params.id]);
+    const client = existing[0];
+    if (!client) return res.status(404).json({ error: 'Cliente não encontrado' });
+
     const [result] = await db.query(
       'UPDATE clients SET company_name = ?, contact_email = ?, logo_url = ?, social_networks = ? WHERE id = ?',
-      [company_name, contact_email, logo_url || null, social_networks || null, req.params.id]
+      [company_name || client.company_name, contact_email || client.contact_email, logo_url || client.logo_url, social_networks || client.social_networks, req.params.id]
     );
 
     if (result.affectedRows === 0) return res.status(404).json({ error: 'Cliente não encontrado' });
