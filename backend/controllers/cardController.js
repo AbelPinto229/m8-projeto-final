@@ -16,7 +16,7 @@ const getAll = async (req, res) => {
   }
 };
 
-// GET /api/cards?client_id=:id — cards de um cliente específico
+// GET /api/cards?client_id=:id — cards de um cliente específico 
 const getByClient = async (req, res) => {
   try {
     const { client_id } = req.query;
@@ -50,7 +50,7 @@ const create = async (req, res) => {
   try {
     const { client_id, title, body, image_url, social_network, scheduled_date } = req.body;
 
-    if (!client_id || !title || !body || !social_network) {
+    if (!client_id || !title || !body || !social_network || !scheduled_date) {
       return res.status(400).json({ error: 'Dados em falta ou inválidos' });
     }
 
@@ -79,9 +79,18 @@ const create = async (req, res) => {
 const update = async (req, res) => {
   try {
     const { title, body, image_url, social_network, scheduled_date } = req.body;
+
+    if (!title || !body || !social_network || !scheduled_date) {
+      return res.status(400).json({ error: 'Dados em falta ou inválidos' });
+    }
+
+    const [existing] = await db.query('SELECT * FROM content_cards WHERE id = ?', [req.params.id]);
+    const card = existing[0];
+    if (!card) return res.status(404).json({ error: 'Card não encontrado' });
+
     const [result] = await db.query(
       'UPDATE content_cards SET title = ?, body = ?, image_url = ?, social_network = ?, scheduled_date = ? WHERE id = ?',
-      [title, body, image_url || null, social_network, scheduled_date || null, req.params.id]
+      [title || card.title, body || card.body, image_url || card.image_url, social_network || card.social_network, scheduled_date || card.scheduled_date, req.params.id]
     );
     if (result.affectedRows === 0) return res.status(404).json({ error: 'Card não encontrado' });
     res.json({ message: 'Card actualizado com sucesso' });
