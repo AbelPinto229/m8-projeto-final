@@ -1,6 +1,4 @@
 // backend/services/clientService.js
-// Camada de acesso a dados dos clients — só fala com a BD.
-
 const db = require('../db/connection');
 
 // GET /api/clients
