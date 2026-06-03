@@ -1,6 +1,6 @@
 const BASE_URL = 'http://localhost:5000/api';
 
-// CLIENTS
+// clientes
 export const getClients = () =>
   fetch(`${BASE_URL}/clients`).then(r => r.json());
 
@@ -25,7 +25,7 @@ export const deleteClient = (id) =>
   fetch(`${BASE_URL}/clients/${id}`, { method: 'DELETE' }).then(r => r.json());
 
 
-// CARDS
+// cards
 export const getCards = () =>
   fetch(`${BASE_URL}/cards`).then(r => r.json());
 
@@ -60,7 +60,7 @@ export const deleteCard = (id) =>
   fetch(`${BASE_URL}/cards/${id}`, { method: 'DELETE' }).then(r => r.json());
 
 
-// COMMENTS
+// comentários
 export const getCommentsByCard = (card_id) =>
   fetch(`${BASE_URL}/comments?card_id=${card_id}`).then(r => r.json());
 
@@ -72,7 +72,7 @@ export const createComment = (data) =>
   }).then(r => r.json());
 
 
-// METRICS
+// métricas
 export const getMetricsByCard = (card_id) =>
   fetch(`${BASE_URL}/metrics?card_id=${card_id}`).then(r => r.json());
 
