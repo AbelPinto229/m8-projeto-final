@@ -1,6 +1,5 @@
 // backend/controllers/metricController.js
-
-const db = require('../db/connection');
+const metricService = require('../services/metricService');
 
 // GET /api/metrics?card_id=:id — métricas de um card
 const getByCard = async (req, res) => {
@@ -11,17 +10,13 @@ const getByCard = async (req, res) => {
       return res.status(400).json({ error: 'Dados em falta ou inválidos' });
     }
 
-    const [rows] = await db.query(
-      'SELECT * FROM metrics WHERE card_id = ?',
-      [card_id]
-    );
-    res.json(rows[0] || null);
+    const metric = await metricService.getByCard(card_id);
+    res.json(metric);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Ocorreu um erro. Tente novamente mais tarde.' });
   }
 };
-
 
 // POST /api/metrics — inserir métricas manualmente
 const create = async (req, res) => {
@@ -32,14 +27,13 @@ const create = async (req, res) => {
       return res.status(400).json({ error: 'Dados em falta ou inválidos' });
     }
 
-    const [result] = await db.query(
-      'INSERT INTO metrics (card_id, reach, likes, comments_count, shares, published_at) VALUES (?, ?, ?, ?, ?, ?)',
-      [card_id, reach || 0, likes || 0, comments_count || 0, shares || 0, published_at]
-    );
+    const id = await metricService.create({
+      card_id, reach, likes, comments_count, shares, published_at,
+    });
 
     res.status(201).json({
-      id: result.insertId,
-      card_id, reach, likes, comments_count, shares, published_at
+      id,
+      card_id, reach, likes, comments_count, shares, published_at,
     });
   } catch (err) {
     console.error(err);
@@ -56,12 +50,11 @@ const update = async (req, res) => {
       return res.status(400).json({ error: 'Dados em falta ou inválidos' });
     }
 
-    const [result] = await db.query(
-      'UPDATE metrics SET reach = ?, likes = ?, comments_count = ?, shares = ?, published_at = ? WHERE id = ?',
-      [reach || 0, likes || 0, comments_count || 0, shares || 0, published_at, req.params.id]
-     );
+    const ok = await metricService.update(req.params.id, {
+      reach, likes, comments_count, shares, published_at,
+    });
+    if (!ok) return res.status(404).json({ error: 'Métricas não encontradas' });
 
-    if (result.affectedRows === 0) return res.status(404).json({ error: 'Métricas não encontradas' });
     res.json({ message: 'Métricas actualizadas com sucesso' });
   } catch (err) {
     console.error(err);
@@ -69,4 +62,4 @@ const update = async (req, res) => {
   }
 };
 
-module.exports = { getByCard, create, update};
+module.exports = { getByCard, create, update };

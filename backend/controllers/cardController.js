@@ -2,7 +2,7 @@
 const cardService = require('../services/cardService');
 const aiService = require('../services/aiService');
 
-// GET /api/cards — todos os cards (agência)
+// GET /api/cards — todos os cards
 const getAll = async (req, res) => {
   try {
     const cards = await cardService.getAll();
