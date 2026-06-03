@@ -1,6 +1,5 @@
 // backend/controllers/commentController.js
-
-const db = require('../db/connection');
+const commentService = require('../services/commentService');
 
 // GET /api/comments?card_id=:id — comentários de um card
 const getByCard = async (req, res) => {
@@ -11,11 +10,8 @@ const getByCard = async (req, res) => {
       return res.status(400).json({ error: 'Dados em falta ou inválidos' });
     }
 
-    const [rows] = await db.query(
-      'SELECT * FROM comments WHERE card_id = ? ORDER BY created_at ASC',
-      [card_id]
-    );
-    res.json(rows);
+    const comments = await commentService.getByCard(card_id);
+    res.json(comments);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Ocorreu um erro. Tente novamente mais tarde.' });
@@ -34,15 +30,14 @@ const create = async (req, res) => {
     const validTypes = ['comment', 'suggestion'];
     const commentType = validTypes.includes(type) ? type : 'comment';
 
-    const [result] = await db.query(
-      'INSERT INTO comments (card_id, client_id, message, type) VALUES (?, ?, ?, ?)',
-      [card_id, client_id, message, commentType]
-    );
+    const id = await commentService.create({
+      card_id, client_id, message, type: commentType,
+    });
 
     res.status(201).json({
-      id: result.insertId,
+      id,
       card_id, client_id, message,
-      type: commentType
+      type: commentType,
     });
   } catch (err) {
     console.error(err);
@@ -53,14 +48,13 @@ const create = async (req, res) => {
 // DELETE /api/comments/:id — apagar comentário
 const remove = async (req, res) => {
   try {
-    const [result] = await db.query('DELETE FROM comments WHERE id = ?', [req.params.id]);
-    if (result.affectedRows === 0) return res.status(404).json({ error: 'Comentário não encontrado' });
+    const ok = await commentService.remove(req.params.id);
+    if (!ok) return res.status(404).json({ error: 'Comentário não encontrado' });
     res.json({ message: 'Comentário eliminado com sucesso' });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Ocorreu um erro. Tente novamente mais tarde.' });
   }
 };
-
 
 module.exports = { getByCard, create, remove };
