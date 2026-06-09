@@ -19,32 +19,34 @@ const getById = async (id) => {
 };
 
 // POST /api/clients
-const create = async ({ company_name, contact_email, logo_url, social_networks }) => {
+const create = async ({ company_name, contact_email, logo_url, social_networks, color }) => {
   const [result] = await db.query(
-    'INSERT INTO clients (company_name, contact_email, logo_url, social_networks) VALUES (?, ?, ?, ?)',
+    'INSERT INTO clients (company_name, contact_email, logo_url, social_networks, color) VALUES (?, ?, ?, ?, ?)',
     [
       company_name,
       contact_email || null,
       logo_url || null,
       social_networks || null,
+      color || null,
     ]
   );
   return result.insertId;
 };
 
 // PUT /api/clients/:id
-const update = async (id, { company_name, contact_email, logo_url, social_networks, status }) => {
+const update = async (id, { company_name, contact_email, logo_url, social_networks, status, color }) => {
   const existing = await getById(id);
   if (!existing) return false;
 
   const [result] = await db.query(
-    'UPDATE clients SET company_name = ?, contact_email = ?, logo_url = ?, social_networks = ?, status = ? WHERE id = ?',
+    'UPDATE clients SET company_name = ?, contact_email = ?, logo_url = ?, social_networks = ?, status = ?, color = ? WHERE id = ?',
     [
       company_name || existing.company_name,
       contact_email || existing.contact_email,
       logo_url || existing.logo_url,
       social_networks || existing.social_networks,
       status || existing.status,
+      color !== undefined ? color : existing.color,
       id,
     ]
   );

@@ -27,19 +27,19 @@ const getById = async (req, res) => {
 // POST /api/clients
 const create = async (req, res) => {
   try {
-    const { company_name, contact_email, logo_url, social_networks } = req.body;
+    const { company_name, contact_email, logo_url, social_networks, color } = req.body;
 
     if (!company_name || !contact_email || !social_networks) {
       return res.status(400).json({ error: 'Dados em falta ou inválidos' });
     }
 
     const id = await clientService.create({
-      company_name, contact_email, logo_url, social_networks,
+      company_name, contact_email, logo_url, social_networks, color,
     });
 
     res.status(201).json({
       id,
-      company_name, contact_email, logo_url, social_networks,
+      company_name, contact_email, logo_url, social_networks, color,
     });
   } catch (err) {
     console.error(err);
@@ -50,14 +50,14 @@ const create = async (req, res) => {
 // PUT /api/clients/:id
 const update = async (req, res) => {
   try {
-    const { company_name, contact_email, logo_url, social_networks, status } = req.body;
+    const { company_name, contact_email, logo_url, social_networks, status, color } = req.body;
 
     if (!company_name) {
       return res.status(400).json({ error: 'Dados em falta ou inválidos' });
     }
 
     const ok = await clientService.update(req.params.id, {
-      company_name, contact_email, logo_url, social_networks, status,
+      company_name, contact_email, logo_url, social_networks, status, color,
     });
     if (!ok) return res.status(404).json({ error: 'Cliente não encontrado' });
 

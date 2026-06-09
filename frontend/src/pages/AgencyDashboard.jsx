@@ -54,13 +54,13 @@ function AgencyDashboard() {
       if (client) {
         const index = clients.indexOf(client);
         setSelectedClient(client);
-        setSelectedClientColor(COLORS[index % COLORS.length]);
+        setSelectedClientColor(client.color || COLORS[client.id % COLORS.length]);
         getCardsByClient(client.id).then(setCards);
       }
     }
   }, [id, clients]);
 
-  const handleClientClick = (client, colorIndex) => {
+  const handleClientClick = (client) => {
     navigate(`/agencia/cliente/${client.id}`);
   };
 
@@ -70,13 +70,13 @@ function AgencyDashboard() {
     navigate('/agencia');
   };
 
-  const handleOpenEditClient = (e, client, colorIndex) => {
+  const handleOpenEditClient = (e, client) => {
     e.stopPropagation();
     setEditClientForm({
       company_name: client.company_name,
       social_networks: client.social_networks,
       status: client.status || 'ativo',
-      color: COLORS[colorIndex % COLORS.length],
+      color: client.color || '#6366f1',
     });
     setEditClientModal(client);
   };
@@ -88,6 +88,7 @@ function AgencyDashboard() {
       contact_email: editClientModal.contact_email || '',
       social_networks: editClientForm.social_networks,
       status: editClientForm.status,
+      color: editClientForm.color,
     });
     const data = await getClients();
     setClients(data);
@@ -243,11 +244,12 @@ function AgencyDashboard() {
 
   const handleClientFormSubmit = async (e) => {
     e.preventDefault();
-    await createClient(clientForm);
+    await createClient({ ...clientForm, color: clientColor });
     const data = await getClients();
     setClients(data);
     setShowNewClientModal(false);
     setClientForm({ company_name: '', contact_email: '', social_networks: '' });
+    setClientColor('#6366f1');
   };
 
   const onDragEnd = async (result) => {
@@ -722,13 +724,18 @@ function AgencyDashboard() {
 
           <div style={{ display: 'flex', alignItems: 'start', gap: '24px' }}>
             <div className="clients-grid" style={{ flex: 1 }}>
-              {filteredClients.map((client, index) => {
+              {filteredClients.map((client) => {
                 const isInativo = client.status === 'inativo';
+                const cardColor = client.color || null;
+                const fallbackClass = COLORS[client.id % COLORS.length];
                 return (
-                  <div key={client.id} className={`proj-card${isInativo ? ' proj-card--inactive' : ''}`} onClick={() => handleClientClick(client, index)}>
-                    <div className={`proj-card-banner ${isInativo ? 'color-inactive' : COLORS[index % COLORS.length]}`}>
+                  <div key={client.id} className={`proj-card${isInativo ? ' proj-card--inactive' : ''}`} onClick={() => handleClientClick(client)}>
+                    <div
+                      className={`proj-card-banner${isInativo ? ' color-inactive' : cardColor ? '' : ` ${fallbackClass}`}`}
+                      style={!isInativo && cardColor ? { background: cardColor } : undefined}
+                    >
                       <span className="proj-card-name">{client.company_name}</span>
-                      <button className="proj-card-edit-btn" onClick={(e) => handleOpenEditClient(e, client, index)}>Editar</button>
+                      <button className="proj-card-edit-btn" onClick={(e) => handleOpenEditClient(e, client)}>Editar</button>
                       {isInativo && <span className="proj-card-status-tag">Inativo</span>}
                     </div>
                     <div className="proj-card-body">
@@ -739,7 +746,10 @@ function AgencyDashboard() {
                           <span className="proj-stat">👥 1</span>
                         </div>
                         <div className="proj-members-stack">
-                          <div className={`member-avatar ${isInativo ? 'color-inactive' : COLORS[index % COLORS.length]}`}>{client.company_name.charAt(0)}</div>
+                          <div
+                            className={`member-avatar${isInativo ? ' color-inactive' : cardColor ? '' : ` ${fallbackClass}`}`}
+                            style={!isInativo && cardColor ? { background: cardColor } : undefined}
+                          >{client.company_name.charAt(0)}</div>
                         </div>
                       </div>
                     </div>
@@ -805,6 +815,14 @@ function AgencyDashboard() {
                   <option value="ativo">Ativo</option>
                   <option value="inativo">Inativo</option>
                 </select>
+              </div>
+              <div className="form-group">
+                <label>Cor do projeto</label>
+                <div className="color-picker">
+                  {DRAWER_COLORS.map((color) => (
+                    <button key={color} type="button" className={`color-dot ${editClientForm.color === color ? 'color-dot--active' : ''}`} style={{ background: color }} onClick={() => setEditClientForm({ ...editClientForm, color })} />
+                  ))}
+                </div>
               </div>
               <div className="drawer__actions">
                 <button type="button" className="btn-cancel" onClick={() => setEditClientModal(null)}>Cancelar</button>
