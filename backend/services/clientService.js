@@ -33,17 +33,18 @@ const create = async ({ company_name, contact_email, logo_url, social_networks }
 };
 
 // PUT /api/clients/:id
-const update = async (id, { company_name, contact_email, logo_url, social_networks }) => {
+const update = async (id, { company_name, contact_email, logo_url, social_networks, status }) => {
   const existing = await getById(id);
   if (!existing) return false;
 
   const [result] = await db.query(
-    'UPDATE clients SET company_name = ?, contact_email = ?, logo_url = ?, social_networks = ? WHERE id = ?',
+    'UPDATE clients SET company_name = ?, contact_email = ?, logo_url = ?, social_networks = ?, status = ? WHERE id = ?',
     [
       company_name || existing.company_name,
       contact_email || existing.contact_email,
       logo_url || existing.logo_url,
       social_networks || existing.social_networks,
+      status || existing.status,
       id,
     ]
   );
