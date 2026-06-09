@@ -43,7 +43,7 @@ export const getCards = async () => {
 };
 
 export const getCardsByClient = async (client_id) => {
-  const res = await fetch(`${BASE_URL}/cards?client_id=${client_id}`);
+  const res = await fetch(`${BASE_URL}/cards/by-client?client_id=${client_id}`);
   return await res.json();
 };
 
@@ -89,6 +89,11 @@ export const deleteCard = async (id) => {
 // comentários
 export const getCommentsByCard = async (card_id) => {
   const res = await fetch(`${BASE_URL}/comments?card_id=${card_id}`);
+  return await res.json();
+};
+
+export const deleteComment = async (id) => {
+  const res = await fetch(`${BASE_URL}/comments/${id}`, { method: 'DELETE' });
   return await res.json();
 };
 
