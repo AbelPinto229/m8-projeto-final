@@ -59,13 +59,13 @@ const create = async ({
 };
 
 // PUT /api/cards/:id
-const update = async (id, { title, body, image_url, social_network, scheduled_date }) => {
+const update = async (id, { title, body, image_url, social_network, scheduled_date, ai_suggestion }) => {
   const existing = await getById(id);
   if (!existing) return false;
 
   const [result] = await db.query(
     `UPDATE content_cards
-        SET title = ?, body = ?, image_url = ?, social_network = ?, scheduled_date = ?
+        SET title = ?, body = ?, image_url = ?, social_network = ?, scheduled_date = ?, ai_suggestion = ?
       WHERE id = ?`,
     [
       title || existing.title,
@@ -73,6 +73,11 @@ const update = async (id, { title, body, image_url, social_network, scheduled_da
       image_url || existing.image_url,
       social_network || existing.social_network,
       scheduled_date || existing.scheduled_date,
+      ai_suggestion
+        ? ai_suggestion
+        : (typeof existing.ai_suggestion === 'string'
+            ? existing.ai_suggestion
+            : JSON.stringify(existing.ai_suggestion)),
       id,
     ]
   );
