@@ -60,16 +60,19 @@ function AgencyDashboard() {
     }
   }, [id, clients]);
 
+  // navega para o dashboard do cliente selecionado
   const handleClientClick = (client) => {
     navigate(`/agencia/cliente/${client.id}`);
   };
 
+  // volta à lista de clientes
   const handleBack = () => {
     setSelectedClient(null);
     setCards([]);
     navigate('/agencia');
   };
 
+  // prepara formulário de edição do cliente
   const handleOpenEditClient = (e, client) => {
     e.stopPropagation();
     setEditClientForm({
@@ -81,6 +84,7 @@ function AgencyDashboard() {
     setEditClientModal(client);
   };
 
+  // atualiza dados do cliente e recarrega lista
   const handleEditClientSubmit = async (e) => {
     e.preventDefault();
     await updateClient(editClientModal.id, {
@@ -95,6 +99,7 @@ function AgencyDashboard() {
     setEditClientModal(null);
   };
 
+  // elimina cliente e atualiza lista
   const handleDeleteClient = async () => {
     await deleteClient(editClientModal.id);
     const data = await getClients();
@@ -103,11 +108,13 @@ function AgencyDashboard() {
     setEditClientModal(null);
   };
 
+  // remove comentário da lista local
   const handleDeleteComment = async (commentId) => {
     await deleteComment(commentId);
     setComments((prev) => prev.filter((c) => c.id !== commentId));
   };
 
+  // guarda ou atualiza métricas do card
   const handleMetricsSubmit = async (e) => {
     e.preventDefault();
     const payload = {
@@ -127,6 +134,7 @@ function AgencyDashboard() {
     setMetrics(updated);
   };
 
+  // carrega dados do card selecionado (comentários e métricas)
   const handleCardClick = async (card) => {
     setSelectedCard(card);
     setActiveTab('details');
@@ -147,12 +155,14 @@ function AgencyDashboard() {
     }
   };
 
+  // fecha modal do card
   const handleCloseModal = () => {
     setSelectedCard(null);
     setComments([]);
     setMetrics(null);
   };
 
+  // abre modal de criar novo card
   const handleOpenCreate = () => {
     setCreatedCard(null);
     setCreateForm({ title: '', body: '', social_network: 'instagram', scheduled_date: '' });
@@ -160,16 +170,19 @@ function AgencyDashboard() {
     setShowCreateModal(true);
   };
 
+  // adiciona previews de imagens selecionadas
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
     const previews = files.map((f) => URL.createObjectURL(f));
     setImagePreviews((prev) => [...prev, ...previews]);
   };
 
+  // remove uma imagem do preview
   const handleRemoveImage = (index) => {
     setImagePreviews((prev) => prev.filter((_, i) => i !== index));
   };
 
+  // cria novo card e carrega lista atualizada
   const handleCreateSubmit = async (e) => {
     e.preventDefault();
     setCreateLoading(true);
@@ -180,11 +193,13 @@ function AgencyDashboard() {
     setCards(data);
   };
 
+  // fecha modal de criar
   const handleCloseCreate = () => {
     setShowCreateModal(false);
     setCreatedCard(null);
   };
 
+  // elimina card e atualiza lista
   const handleDeleteCard = async () => {
     await deleteCard(selectedCard.id);
     const data = await getCardsByClient(selectedClient.id);
@@ -193,6 +208,7 @@ function AgencyDashboard() {
     handleCloseModal();
   };
 
+  // atualiza status do card e recarrega lista
   const handleStatusChange = async (status) => {
     setStatusLoading(true);
     try {
@@ -208,6 +224,7 @@ function AgencyDashboard() {
     }
   };
 
+  // prepara o formulário de edição com dados do card selecionado
   const handleEditOpen = () => {
     setEditForm({
       title: selectedCard.title,
@@ -219,12 +236,32 @@ function AgencyDashboard() {
     setEditMode(true);
   };
 
+  // aceita sugestão da ia e transfere para o formulário de edição
+  const handleAcceptAISuggestion = () => {
+    if (!aiSuggestion) return;
+    
+    const hashtags = aiSuggestion.hashtags?.join(' ') || '';
+    const newBody = hashtags 
+      ? `${aiSuggestion.improved_content}\n\n${hashtags}`
+      : aiSuggestion.improved_content;
+    
+    setEditForm({
+      ...editForm,
+      body: newBody,
+    });
+    
+    setEditMode(true);
+    setActiveTab('details');
+  };
+
+  // substitui preview de imagem na edição
   const handleEditImageChange = (e) => {
     const files = Array.from(e.target.files);
     const previews = files.map((f) => URL.createObjectURL(f));
     setEditImagePreviews(previews);
   };
 
+  // guarda alterações do card e reanalisa com ia se solicitado
   const handleEditSave = async (reanalyse = false) => {
     try {
       const result = await updateCard(selectedCard.id, { ...editForm, reanalyse });
@@ -242,6 +279,7 @@ function AgencyDashboard() {
     }
   };
 
+  // cria novo cliente e carrega lista atualizada
   const handleClientFormSubmit = async (e) => {
     e.preventDefault();
     await createClient({ ...clientForm, color: clientColor });
@@ -252,6 +290,7 @@ function AgencyDashboard() {
     setClientColor('#6366f1');
   };
 
+  // atualiza status do card ao arrastar entre colunas
   const onDragEnd = async (result) => {
     const { destination, source, draggableId } = result;
     if (!destination) return;
@@ -266,12 +305,14 @@ function AgencyDashboard() {
   const approved = cards.filter((c) => c.status === 'approved');
   const published = cards.filter((c) => c.status === 'published');
 
+  // filtra clientes por pesquisa e estado
   const filteredClients = clients.filter((c) => {
     const matchSearch = c.company_name.toLowerCase().includes(search.toLowerCase());
     const matchFilter = filter === 'todos' || (c.status || 'ativo') === filter;
     return matchSearch && matchFilter;
   });
 
+  // calcula estatísticas dos clientes
   const totalClients = clients.length;
   const ativos = clients.filter((c) => (c.status || 'ativo') === 'ativo').length;
   const inativos = clients.filter((c) => c.status === 'inativo').length;
@@ -280,12 +321,14 @@ function AgencyDashboard() {
     ? selectedClient.social_networks.split(',').filter(Boolean)
     : [];
 
+  // converte string de json da sugestão ia para objeto
   const aiSuggestion = selectedCard?.ai_suggestion
     ? typeof selectedCard.ai_suggestion === 'string'
       ? JSON.parse(selectedCard.ai_suggestion)
       : selectedCard.ai_suggestion
     : null;
 
+  // converte string de json da previsão de métricas para objeto
   const aiMetrics = selectedCard?.ai_metrics_prediction
     ? typeof selectedCard.ai_metrics_prediction === 'string'
       ? JSON.parse(selectedCard.ai_metrics_prediction)
@@ -610,8 +653,32 @@ function AgencyDashboard() {
                   {aiSuggestion && (
                     <>
                       <div className="ai-section">
-                        <h3>Conteúdo melhorado</h3>
-                        <p>{aiSuggestion.improved_content}</p>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', gap: '1rem' }}>
+                          <div style={{ flex: 1 }}>
+                            <h3>Conteúdo melhorado</h3>
+                            <p>{aiSuggestion.improved_content}</p>
+                          </div>
+                          <button 
+                            onClick={handleAcceptAISuggestion}
+                            style={{
+                              padding: '8px 16px',
+                              background: '#10b981',
+                              color: '#fff',
+                              border: 'none',
+                              borderRadius: '8px',
+                              fontWeight: '600',
+                              fontSize: '12px',
+                              cursor: 'pointer',
+                              whiteSpace: 'nowrap',
+                              marginTop: '2px',
+                              transition: 'background 0.2s',
+                            }}
+                            onMouseEnter={(e) => e.target.style.background = '#059669'}
+                            onMouseLeave={(e) => e.target.style.background = '#10b981'}
+                          >
+                            ✓ Aceitar
+                          </button>
+                        </div>
                       </div>
                       <div className="ai-section">
                         <h3>Hashtags</h3>

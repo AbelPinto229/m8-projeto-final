@@ -18,11 +18,13 @@ function ClientDashboard() {
   const [commentForm, setCommentForm] = useState({ message: '', type: 'comment' });
   const [commentLoading, setCommentLoading] = useState(false);
 
+  // carrega dados do cliente e cards ao montar
   useEffect(() => {
     getClientById(clientId).then(setClient);
     getCardsByClient(clientId).then(setCards);
   }, [clientId]);
 
+  // carrega dados do card e comentários associados
   const handleCardClick = async (card) => {
     setSelectedCard(card);
     setCommentForm({ message: '', type: 'comment' });
@@ -30,16 +32,19 @@ function ClientDashboard() {
     setComments(data);
   };
 
+  // fecha modal do card
   const handleCloseModal = () => {
     setSelectedCard(null);
     setComments([]);
   };
 
+  // elimina um comentário da lista
   const handleDeleteComment = async (id) => {
     await deleteComment(id);
     setComments((prev) => prev.filter((c) => c.id !== id));
   };
 
+  // cria novo comentário ou sugestão
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
     if (!commentForm.message.trim()) return;
@@ -55,14 +60,17 @@ function ClientDashboard() {
     setCommentLoading(false);
   };
 
+  // agrupa cards por estado
   const inReview = cards.filter((c) => c.status === 'in_review');
   const approved = cards.filter((c) => c.status === 'approved');
   const published = cards.filter((c) => c.status === 'published');
 
+  // extrai lista de plataformas da string de redes sociais
   const platforms = client?.social_networks
     ? client.social_networks.split(',').filter(Boolean)
     : [];
 
+  // converte string de json da previsão de métricas para objeto
   const aiMetrics = selectedCard?.ai_metrics_prediction
     ? typeof selectedCard.ai_metrics_prediction === 'string'
       ? JSON.parse(selectedCard.ai_metrics_prediction)
