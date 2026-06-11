@@ -457,6 +457,12 @@ em { font-style: normal; color: var(--blue); }
   border: 2px dashed var(--border);
   overflow: hidden;
 }
+.team-photo {
+  background-image: url('https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=1600&q=90&fit=crop');
+  background-size: cover;
+  background-position: center;
+  border: none;
+}
 .qs-caption {
   font-family: var(--font-b);
   font-size: .8rem;
@@ -587,12 +593,12 @@ em { font-style: normal; color: var(--blue); }
 .pi-tall .pi-img { height: 100%; }
 .pi:hover .pi-img { transform: scale(1.04); }
 
-.pimg-1 { background: linear-gradient(135deg, #1a0a2e 0%, #833AB4 100%); }
-.pimg-2 { background: linear-gradient(135deg, #833AB4 0%, #C13584 100%); }
-.pimg-3 { background: linear-gradient(135deg, #C13584 0%, #F77737 100%); }
-.pimg-4 { background: linear-gradient(135deg, #1a0a2e 0%, #C13584 100%); }
-.pimg-5 { background: linear-gradient(135deg, #F77737 0%, #C13584 50%, #833AB4 100%); }
-.pimg-6 { background: linear-gradient(135deg, #5c1a7a 0%, #1a0a2e 100%); }
+.pimg-1 { background-image: url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1600&q=90&fit=crop'); background-size: cover; background-position: center; }
+.pimg-2 { background-image: url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1600&q=90&fit=crop'); background-size: cover; background-position: center; }
+.pimg-3 { background-image: url('https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=90&fit=crop'); background-size: cover; background-position: center; }
+.pimg-4 { background-image: url('https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=1600&q=90&fit=crop'); background-size: cover; background-position: center; }
+.pimg-5 { background-image: url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1600&q=90&fit=crop'); background-size: cover; background-position: center; }
+.pimg-6 { background-image: url('https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1600&q=90&fit=crop'); background-size: cover; background-position: center; }
 
 .pi-ov {
   position: absolute; inset: 0;

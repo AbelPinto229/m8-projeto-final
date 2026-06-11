@@ -129,3 +129,12 @@ export const updateMetrics = async (id, data) => {
   });
   return await res.json();
 };
+
+export const submitContact = async (data) => {
+  const res = await fetch(`${BASE_URL}/contacts`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  return await res.json();
+};

@@ -138,6 +138,13 @@ function AgencyDashboard() {
   const handleCardClick = async (card) => {
     setSelectedCard(card);
     setActiveTab('details');
+    setEditMode(false);
+    setEditForm({
+      title: card.title || '',
+      body: card.body || '',
+      social_network: card.social_network || 'instagram',
+      scheduled_date: card.scheduled_date ? card.scheduled_date.split('T')[0] : '',
+    });
     const commentsData = await getCommentsByCard(card.id);
     setComments(commentsData);
     const metricsData = await getMetricsByCard(card.id);

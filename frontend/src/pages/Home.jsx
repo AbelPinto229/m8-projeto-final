@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { submitContact } from '../services/api';
 import '../styles/style.css';
 
 export default function Home() {
@@ -162,7 +163,7 @@ function QuemSomos() {
           </div>
         </div>
         <div className="qs-img r">
-          <div className="img-ph"><span>Foto da equipa OffScroll</span></div>
+          <div className="img-ph team-photo"></div>
           <p className="qs-caption">A equipa OffScroll — movidos pela criatividade.</p>
         </div>
       </div>
@@ -237,7 +238,7 @@ function Portfolio() {
         ))}
       </div>
       <div className="port-more r">
-        <a href="https://www.instagram.com/offscrollmarketing.pt/" target="_blank" rel="noreferrer" className="btn-line">
+        <a href="https://www.instagram.com/offscroll.agency/" target="_blank" rel="noreferrer" className="btn-line">
           Ver mais no Instagram <span>→</span>
         </a>
       </div>
@@ -291,7 +292,7 @@ function Contacto() {
     }
   }
 
-  function onSubmit(e) {
+  async function onSubmit(e) {
     e.preventDefault();
     const errs = new Set();
     if (!form.nome.trim())     errs.add('nome');
@@ -300,12 +301,16 @@ function Contacto() {
     if (errs.size) { setErrFields(errs); return; }
 
     setBusy(true);
-    setTimeout(() => {
+    try {
+      await submitContact(form);
       setForm({ nome: '', email: '', servico: '', mensagem: '' });
-      setBusy(false);
       setOkShown(true);
       setTimeout(() => setOkShown(false), 5000);
-    }, 1400);
+    } catch {
+      alert('Erro ao enviar a mensagem. Tenta novamente.');
+    } finally {
+      setBusy(false);
+    }
   }
 
   function fieldStyle(name) {
@@ -322,7 +327,7 @@ function Contacto() {
             <p className="r">Conta-nos o teu projeto.<br />Respondemos em menos de 24 horas.</p>
             <div className="ct-info r">
               <a href="mailto:geral@offscroll.pt" className="ct-link">✉ geral@offscroll.pt</a>
-              <a href="https://www.instagram.com/offscrollmarketing.pt/" target="_blank" rel="noreferrer" className="ct-link">◎ @offscrollmarketing.pt</a>
+              <a href="https://www.instagram.com/offscroll.agency/" target="_blank" rel="noreferrer" className="ct-link">◎ @offscroll.agency</a>
             </div>
           </div>
           <div className="ct-right r">
@@ -397,7 +402,7 @@ function Footer() {
           <a href="#reviews"    onClick={e => smooth(e, '#reviews')}>Clientes</a>
           <a href="#contacto"   onClick={e => smooth(e, '#contacto')}>Contacto</a>
         </nav>
-        <a href="https://www.instagram.com/offscrollmarketing.pt/" target="_blank" rel="noreferrer" className="ft-ig">
+        <a href="https://www.instagram.com/offscroll.agency/" target="_blank" rel="noreferrer" className="ft-ig">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="20" height="20">
             <rect x="2" y="2" width="20" height="20" rx="5" />
             <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
