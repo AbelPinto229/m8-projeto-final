@@ -22,12 +22,13 @@
   transform: translateY(-1px);
 }
 
-/* Ã¢â€“â€˜Ã¢â€“â€˜ RESET Ã¢â€“â€˜Ã¢â€“â€˜ */
+/* ── Reset ─────────────────────────────────────────────────── */
 *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; font-size: 16px; }
+html { scroll-behavior: smooth; font-size: 16px; overflow-x: hidden; }
 img  { max-width: 100%; display: block; }
 a    { text-decoration: none; }
 
+/* ── Variáveis globais (cores, gradientes, tipografia, raios) ─ */
 :root {
   --blue:      #833AB4;
   --blue-dk:   #6B1FA0;
@@ -54,6 +55,7 @@ a    { text-decoration: none; }
   --rlg:       12px;
 }
 
+/* ── Base ──────────────────────────────────────────────────── */
 body {
   font-family: var(--font-b);
   background: var(--bg);
@@ -62,6 +64,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* ── Animação de reveal por scroll (classe .r + .vis) ─────── */
 .r {
   opacity: 0;
   transform: translateY(36px);
@@ -74,6 +77,7 @@ body {
 .r:nth-child(5) { transition-delay: .32s; }
 .r:nth-child(6) { transition-delay: .4s; }
 
+/* ── Tipografia global ─────────────────────────────────────── */
 h1,h2,h3,h4 { font-family: var(--font-b); line-height: 1.05; letter-spacing: -.03em; font-weight: 800; }
 em { font-style: normal; color: var(--blue); }
 
@@ -96,11 +100,13 @@ em { font-style: normal; color: var(--blue); }
   text-transform: uppercase;
 }
 
+/* ── Layout base ───────────────────────────────────────────── */
 .container { max-width: 1280px; margin: 0 auto; padding: 0 2.5rem; }
 .section   { padding: 8rem 0; }
 .sec-head  { max-width: 640px; margin-bottom: 5rem; }
 
 
+/* ── Botão de linha com sublinhado animado ─────────────────── */
 .btn-line {
   display: inline-flex;
   align-items: center;
@@ -134,6 +140,7 @@ em { font-style: normal; color: var(--blue); }
 .btn-line.light:hover { color: var(--blue-lt); }
 
 
+/* ── Navbar (fixa, gradiente Instagram) ────────────────────── */
 .nav {
   position: fixed; top: 0; left: 0; right: 0;
   z-index: 900;
@@ -198,7 +205,7 @@ em { font-style: normal; color: var(--blue); }
   transform: translateY(-2px);
 }
 
-/* hamburger */
+/* ── Hamburger (mobile) ────────────────────────────────────── */
 .hamburger {
   display: none; flex-direction: column; gap: 6px;
   background: none; border: none; cursor: pointer; z-index: 10;
@@ -211,7 +218,7 @@ em { font-style: normal; color: var(--blue); }
 .hamburger.open span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
 .hamburger.open span:nth-child(2) { transform: translateY(-8px) rotate(-45deg); }
 
-/* Ã¢â€“â€˜Ã¢â€“â€˜ MOBILE MENU Ã¢â€“â€˜Ã¢â€“â€˜ */
+/* ── Menu mobile (overlay fullscreen) ─────────────────────── */
 .mobile-menu {
   display: none;
   position: fixed; inset: 0;
@@ -269,6 +276,7 @@ em { font-style: normal; color: var(--blue); }
   line-height: 1.6;
 }
 
+/* ── Secção Hero ───────────────────────────────────────────── */
 .hero {
   position: relative;
   min-height: 100vh;
@@ -371,6 +379,7 @@ em { font-style: normal; color: var(--blue); }
   50%     { transform: translateY(8px); opacity: .4; }
 }
 
+/* ── Faixa de marquee animada ──────────────────────────────── */
 .marquee-wrap {
   overflow: hidden;
   background: var(--grad);
@@ -402,6 +411,7 @@ em { font-style: normal; color: var(--blue); }
   to   { transform: translateX(-50%); }
 }
 
+/* ── Secção Quem Somos ─────────────────────────────────────── */
 .qs { background: var(--bg); }
 .qs-top {
   display: grid; grid-template-columns: 1fr 1.4fr;
@@ -474,6 +484,7 @@ em { font-style: normal; color: var(--blue); }
   text-align: center;
 }
 
+/* ── Secção Serviços ───────────────────────────────────────── */
 .servicos { background: #fff; }
 .servicos .label {
   background: var(--grad);
@@ -560,6 +571,7 @@ em { font-style: normal; color: var(--blue); }
   margin-bottom: 1.5rem;
 }
 
+/* ── Secção Portfólio ──────────────────────────────────────── */
 .portfolio { background: var(--bg); padding-bottom: 5rem; }
 .port-grid {
   display: grid;
@@ -593,6 +605,7 @@ em { font-style: normal; color: var(--blue); }
 .pi-tall .pi-img { height: 100%; }
 .pi:hover .pi-img { transform: scale(1.04); }
 
+/* Imagens do portfólio (Unsplash, w=1600 q=90) */
 .pimg-1 { background-image: url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1600&q=90&fit=crop'); background-size: cover; background-position: center; }
 .pimg-2 { background-image: url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1600&q=90&fit=crop'); background-size: cover; background-position: center; }
 .pimg-3 { background-image: url('https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=90&fit=crop'); background-size: cover; background-position: center; }
@@ -702,6 +715,7 @@ em { font-style: normal; color: var(--blue); }
   grid-template-columns: 1fr 1.4fr;
   gap: 6rem;
   align-items: start;
+  min-width: 0;
 }
 .ct-left h2 { color: var(--black); }
 .ct-left p {
@@ -723,7 +737,7 @@ em { font-style: normal; color: var(--blue); }
 }
 .ct-link:hover { color: var(--blue); }
 
-.form { display: flex; flex-direction: column; gap: 1.25rem; }
+.form { display: flex; flex-direction: column; gap: 1.25rem; width: 100%; min-width: 0; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 .field { display: flex; flex-direction: column; gap: .45rem; }
 .field label {
@@ -736,6 +750,8 @@ em { font-style: normal; color: var(--blue); }
 .field input,
 .field select,
 .field textarea {
+  width: 100%;
+  min-width: 0;
   padding: .85rem 1rem;
   border: 1.5px solid var(--border);
   border-radius: var(--r);
