@@ -48,24 +48,18 @@ const create = async (req, res) => {
 // PUT /api/cards/:id — editar card
 const update = async (req, res) => {
   try {
-    const { title, body, image_url, social_network, scheduled_date, reanalyse } = req.body;
+    const { title, body, image_url, social_network, scheduled_date } = req.body;
 
     if (!title || !body || !social_network || !scheduled_date) {
       return res.status(400).json({ error: 'Dados em falta ou inválidos' });
     }
 
-    let ai_suggestion;
-    if (reanalyse) {
-      ai_suggestion = await aiService.analyseContent(title, body, social_network, scheduled_date);
-    }
-
     const ok = await cardService.update(req.params.id, {
       title, body, image_url, social_network, scheduled_date,
-      ...(ai_suggestion && { ai_suggestion: JSON.stringify(ai_suggestion) }),
     });
     if (!ok) return res.status(404).json({ error: 'Card não encontrado' });
 
-    res.json({ message: 'Card actualizado com sucesso', ...(ai_suggestion && { ai_suggestion }) });
+    res.json({ message: 'Card actualizado com sucesso' });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Ocorreu um erro. Tente novamente mais tarde.' });

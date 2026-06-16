@@ -258,9 +258,9 @@ function AgencyDashboard() {
     setEditImagePreviews(previews);
   };
 
-  const handleEditSave = async (reanalyse = false) => {
+  const handleEditSave = async () => {
     try {
-      const result = await updateCard(selectedCard.id, { ...editForm, reanalyse });
+      const result = await updateCard(selectedCard.id, editForm);
       if (result.error) {
         alert('Erro ao guardar: ' + result.error);
         return;

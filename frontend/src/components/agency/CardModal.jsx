@@ -139,8 +139,7 @@ export default function CardModal({
                   </label>
                 </div>
                 <div className="modal__actions">
-                  <button onClick={() => handleEditSave(false)}>Guardar</button>
-                  <button onClick={() => handleEditSave(true)}>Guardar e reanalisar</button>
+                  <button onClick={handleEditSave}>Guardar</button>
                   <button className="btn-cancel" onClick={() => setEditMode(false)}>Cancelar</button>
                 </div>
               </div>
