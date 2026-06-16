@@ -959,6 +959,8 @@
   font-size: 13px;
   color: #475569;
   line-height: 1.5;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .comment strong {

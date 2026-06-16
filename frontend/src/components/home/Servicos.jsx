@@ -26,7 +26,7 @@ export default function Servicos() {
           ))}
           <div className="sv-cta r">
             <p>Tens um projeto?</p>
-            <a href="#contacto" className="btn-line light"
+            <a href="#contacto" className="btn-line"
               onClick={e => { e.preventDefault(); scrollToSection('#contacto'); }}>
               Vamos conversar <span>→</span>
             </a>
