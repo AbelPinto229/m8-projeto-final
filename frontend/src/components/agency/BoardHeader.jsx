@@ -21,7 +21,9 @@ export default function BoardHeader({
             <h1>{selectedClient.company_name}</h1>
             <p>{selectedClient.contact_email}</p>
           </div>
-          <span className="board-header__badge">Ativo</span>
+          <span className={`board-header__badge${selectedClient.status === 'inativo' ? ' board-header__badge--inactive' : ''}`}>
+            {selectedClient.status === 'inativo' ? 'Inativo' : 'Ativo'}
+          </span>
         </div>
         <div className="board-header__actions">
           <button className="btn-new" onClick={handleOpenCreate}>+ Novo Conteúdo</button>

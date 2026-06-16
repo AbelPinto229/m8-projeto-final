@@ -10,7 +10,9 @@ export default function ClientBoardHeader({ client, cards, inReview, approved, p
             <h1>Olá, {client.company_name}!</h1>
             <p>{client.contact_email}</p>
           </div>
-          <span className="board-header__badge">Ativo</span>
+          <span className={`board-header__badge${client.status === 'inativo' ? ' board-header__badge--inactive' : ''}`}>
+            {client.status === 'inativo' ? 'Inativo' : 'Ativo'}
+          </span>
         </div>
       </div>
       <div className="board-header__stats">
