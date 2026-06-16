@@ -1,6 +1,8 @@
+// coluna do kanban da agência — exibe os cards de um estado (em revisão / aprovado / publicado)
 export default function BoardColumn({ col, handleCardClick }) {
   return (
     <div className="board__column">
+      {/* cabeçalho com dot colorido, nome da coluna e contagem de itens */}
       <div className="board__column-header">
         <div className="board__column-header-left">
           <span className={`board__column-dot ${col.dot}`}></span>
@@ -8,6 +10,7 @@ export default function BoardColumn({ col, handleCardClick }) {
         </div>
         <span className="board__column-count">{col.items.length}</span>
       </div>
+      {/* lista de cards clicáveis — cada um abre o modal de detalhe */}
       <div className="board__droppable">
         {col.items.map((card) => (
           <div key={card.id} className="board__card" onClick={() => handleCardClick(card)}>

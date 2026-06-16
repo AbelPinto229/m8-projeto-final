@@ -1,6 +1,8 @@
+// rodapé com logo, links de navegação, instagram e copyright
 import { scrollToSection } from '../../utils/smoothScroll';
 
 export default function Footer() {
+  // atalho para scroll suave para evitar repetição nos onClick
   function smooth(e, hash) {
     e.preventDefault();
     scrollToSection(hash);
@@ -8,12 +10,14 @@ export default function Footer() {
 
   return (
     <footer className="footer">
+      {/* topo com logo e tagline */}
       <div className="ft-top">
         <a href="#hero" className="ft-logo" onClick={e => smooth(e, '#hero')}>
           <span className="logo-off">OFF</span><span className="logo-scroll">scroll.</span>
         </a>
         <p className="ft-tagline">Conectamos marcas a pessoas reais.</p>
       </div>
+      {/* meio com navegação por secções e link para o instagram */}
       <div className="ft-mid">
         <nav className="ft-nav">
           <a href="#quem-somos" onClick={e => smooth(e, '#quem-somos')}>Quem somos</a>
@@ -31,6 +35,7 @@ export default function Footer() {
           Instagram
         </a>
       </div>
+      {/* fundo com copyright e localização */}
       <div className="ft-bottom">
         <span>© 2025 OffScroll. Todos os direitos reservados.</span>
         <span>Lisboa, Portugal</span>

@@ -1,3 +1,4 @@
+// página inicial pública — compõe todas as secções de marketing em sequência
 import Nav          from '../components/home/Nav';
 import Hero         from '../components/home/Hero';
 import Marquee      from '../components/home/Marquee';
@@ -22,6 +23,7 @@ export default function Home() {
       <Reviews />
       <Contacto />
       <Footer />
+      {/* scrollreveal não renderiza nada — apenas ativa animações nos elementos .r */}
       <ScrollReveal />
     </>
   );

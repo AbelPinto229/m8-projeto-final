@@ -1,3 +1,5 @@
+// modal de conteúdo para o cliente — permite ver detalhe, aprovar e adicionar comentários/sugestões
+// mapeamento de estados internos para texto legível em português
 const STATUS_LABELS = { in_review: 'Em revisão', approved: 'Aprovado', published: 'Publicado' };
 
 export default function ClientCardModal({
@@ -18,6 +20,7 @@ export default function ClientCardModal({
       <div className="client-modal" onClick={(e) => e.stopPropagation()}>
         <button className="client-modal__close" onClick={handleCloseModal}>✕</button>
 
+        {/* cabeçalho com título, rede social, estado e data */}
         <div className="client-modal__header">
           <h2 className="client-modal__title">{selectedCard.title}</h2>
           <div className="client-modal__meta">
@@ -32,6 +35,7 @@ export default function ClientCardModal({
         </div>
 
         <div className="client-modal__body">
+          {/* lado esquerdo com imagem, texto, métricas da ia e botão de aprovação */}
           <div className="client-modal__left">
             {selectedCard.image_url
               ? <img src={selectedCard.image_url} alt="card" className="client-modal__image" />
@@ -39,6 +43,7 @@ export default function ClientCardModal({
             }
             <p className="client-modal__body-text">{selectedCard.body}</p>
 
+            {/* previsão de métricas da ia — só aparece se existirem dados */}
             {aiMetrics && (
               <div className="client-modal__metrics">
                 <p className="client-modal__metrics-title">Previsão de métricas</p>
@@ -66,6 +71,7 @@ export default function ClientCardModal({
               </div>
             )}
 
+            {/* botão de aprovação só aparece quando o conteúdo está em revisão */}
             {selectedCard.status === 'in_review' && (
               <button
                 onClick={handleApprove}
@@ -77,6 +83,7 @@ export default function ClientCardModal({
             )}
           </div>
 
+          {/* lado direito com chat de comentários e formulário de envio */}
           <div className="client-modal__right">
             <div className="client-chat__header">
               <h3>Comentários</h3>
@@ -86,6 +93,7 @@ export default function ClientCardModal({
                 ? <p className="client-chat__empty">Sem comentários ainda.</p>
                 : comments.map((comment) => (
                     <div key={comment.id} className="client-chat__bubble" style={{ position: 'relative' }}>
+                      {/* tipo do comentário: comentário ou sugestão */}
                       <p className="client-chat__bubble-type">
                         {comment.type === 'suggestion' ? 'Sugestão' : 'Comentário'}
                       </p>
@@ -98,6 +106,7 @@ export default function ClientCardModal({
                   ))
               }
             </div>
+            {/* formulário para enviar novo comentário ou sugestão */}
             <form onSubmit={handleCommentSubmit} className="client-chat__form">
               <select
                 className="client-chat__type-select"

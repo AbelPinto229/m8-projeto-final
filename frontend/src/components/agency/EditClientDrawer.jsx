@@ -1,3 +1,4 @@
+// drawer lateral para editar um cliente existente, com modal de confirmação de eliminação
 const DRAWER_COLORS = ['#6366f1', '#10b981', '#ef4444', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#0f172a'];
 
 export default function EditClientDrawer({
@@ -10,6 +11,7 @@ export default function EditClientDrawer({
   setShowDeleteConfirmModal,
   handleDeleteClient,
 }) {
+  // não renderiza nada se nenhum cliente estiver selecionado para edição
   if (!editClientModal) return null;
 
   return (
@@ -41,6 +43,7 @@ export default function EditClientDrawer({
             </div>
             <div className="form-group">
               <label>Estado</label>
+              {/* permite mudar o cliente de ativo para inativo sem o eliminar */}
               <select
                 value={editClientForm.status}
                 onChange={(e) => setEditClientForm({ ...editClientForm, status: e.target.value })}
@@ -52,6 +55,7 @@ export default function EditClientDrawer({
             </div>
             <div className="form-group">
               <label>Cor do projeto</label>
+              {/* seletor de cor com 8 opções — a cor ativa tem anel visual */}
               <div className="color-picker">
                 {DRAWER_COLORS.map((color) => (
                   <button
@@ -68,6 +72,7 @@ export default function EditClientDrawer({
               <button type="button" className="btn-cancel" onClick={() => setEditClientModal(null)}>Cancelar</button>
               <button type="submit" className="btn-new">Guardar</button>
             </div>
+            {/* zona perigosa — abre o modal de confirmação antes de eliminar */}
             <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #fee2e2' }}>
               <button
                 type="button"
@@ -81,6 +86,7 @@ export default function EditClientDrawer({
         </div>
       </div>
 
+      {/* modal de confirmação — aparece por cima do drawer quando o utilizador clica em eliminar */}
       {showDeleteConfirmModal && (
         <div className="confirm-overlay" onClick={() => setShowDeleteConfirmModal(false)}>
           <div className="confirm-modal" onClick={(e) => e.stopPropagation()}>

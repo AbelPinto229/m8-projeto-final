@@ -1,3 +1,4 @@
+// página principal do dashboard da agência — gere clientes, conteúdos, comentários e métricas
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
@@ -17,40 +18,70 @@ import EditClientDrawer from '../components/agency/EditClientDrawer';
 import NewClientDrawer  from '../components/agency/NewClientDrawer';
 import '../styles/AgencyDashboard.css';
 
+// cores de fallback para clientes sem cor definida — atribuídas por id
 const COLORS = ['color-0', 'color-1', 'color-2', 'color-3', 'color-4', 'color-5'];
 
 function AgencyDashboard() {
   const navigate = useNavigate();
+  // id vem da url quando um cliente está selecionado (/agencia/cliente/:id)
   const { id } = useParams();
 
+  // lista completa de clientes carregada da api
   const [clients, setClients] = useState([]);
+  // cliente aberto no kanban
   const [selectedClient, setSelectedClient] = useState(null);
+  // classe de cor do cliente selecionado para o avatar
   const [selectedClientColor, setSelectedClientColor] = useState('color-0');
+  // conteúdos do cliente selecionado
   const [cards, setCards] = useState([]);
+  // conteúdo aberto no modal de detalhe
   const [selectedCard, setSelectedCard] = useState(null);
+  // comentários do conteúdo aberto
   const [comments, setComments] = useState([]);
+  // métricas reais do conteúdo aberto (pode ser null se ainda não foram registadas)
   const [metrics, setMetrics] = useState(null);
+  // aba ativa no modal de detalhe: 'details' | 'ai' | 'report'
   const [activeTab, setActiveTab] = useState('details');
+  // controla visibilidade do modal de criação de conteúdo
   const [showCreateModal, setShowCreateModal] = useState(false);
+  // dados do formulário de criação de conteúdo
   const [createForm, setCreateForm] = useState({ title: '', body: '', social_network: 'instagram', scheduled_date: '' });
+  // dados do formulário de métricas reais
   const [metricsForm, setMetricsForm] = useState({ reach: '', likes: '', comments_count: '', shares: '', published_at: '' });
+  // urls de preview das imagens selecionadas no formulário de criação
   const [imagePreviews, setImagePreviews] = useState([]);
+  // true enquanto a api está a criar o conteúdo e a ia a processar
   const [createLoading, setCreateLoading] = useState(false);
+  // resultado da criação com a sugestão da ia incluída
   const [createdCard, setCreatedCard] = useState(null);
+  // texto de pesquisa da lista de clientes
   const [search, setSearch] = useState('');
+  // filtro de estado: 'todos' | 'ativo' | 'inativo'
   const [filter, setFilter] = useState('todos');
+  // controla visibilidade do drawer de criação de cliente
   const [showNewClientModal, setShowNewClientModal] = useState(false);
+  // dados do formulário de novo cliente
   const [clientForm, setClientForm] = useState({ company_name: '', contact_email: '', social_networks: '' });
+  // cor selecionada para o novo cliente
   const [clientColor, setClientColor] = useState('#6366f1');
+  // true enquanto a mudança de estado do conteúdo está a ser processada
   const [statusLoading, setStatusLoading] = useState(false);
+  // controla visibilidade do modal de confirmação de eliminação de conteúdo
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  // true quando o modal de detalhe está em modo de edição
   const [editMode, setEditMode] = useState(false);
+  // dados do formulário de edição de conteúdo
   const [editForm, setEditForm] = useState({});
+  // urls de preview da imagem de edição
   const [editImagePreviews, setEditImagePreviews] = useState([]);
+  // cliente aberto no drawer de edição (null = drawer fechado)
   const [editClientModal, setEditClientModal] = useState(null);
+  // dados do formulário de edição de cliente
   const [editClientForm, setEditClientForm] = useState({ company_name: '', social_networks: '', status: 'ativo', color: 'color-0' });
+  // controla visibilidade do modal de confirmação de eliminação de cliente
   const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
 
+  // carrega todos os clientes quando o componente monta
   useEffect(() => {
     const fetchClients = async () => {
       const data = await getClients();
@@ -59,6 +90,7 @@ function AgencyDashboard() {
     fetchClients();
   }, []);
 
+  // quando a url tem um id e os clientes já foram carregados, abre o cliente correspondente
   useEffect(() => {
     if (id && clients.length > 0) {
       const client = clients.find((c) => c.id === parseInt(id));
@@ -70,16 +102,20 @@ function AgencyDashboard() {
     }
   }, [id, clients]);
 
+  // navega para o kanban do cliente alterando a url
   const handleClientClick = (client) => {
     navigate(`/agencia/cliente/${client.id}`);
   };
 
+  // volta à lista de clientes
   const handleBack = () => {
     setSelectedClient(null);
     setCards([]);
     navigate('/agencia');
   };
 
+  // abre o drawer de edição pré-preenchido com os dados do cliente
+  // stopPropagation para não abrir o kanban ao clicar em editar
   const handleOpenEditClient = (e, client) => {
     e.stopPropagation();
     setEditClientForm({
@@ -91,6 +127,7 @@ function AgencyDashboard() {
     setEditClientModal(client);
   };
 
+  // submete as alterações do cliente e atualiza a lista
   const handleEditClientSubmit = async (e) => {
     e.preventDefault();
     await updateClient(editClientModal.id, {
@@ -105,6 +142,7 @@ function AgencyDashboard() {
     setEditClientModal(null);
   };
 
+  // elimina o cliente e fecha o drawer
   const handleDeleteClient = async () => {
     await deleteClient(editClientModal.id);
     const data = await getClients();
@@ -113,11 +151,13 @@ function AgencyDashboard() {
     setEditClientModal(null);
   };
 
+  // elimina um comentário da lista localmente sem re-fetch
   const handleDeleteComment = async (commentId) => {
     await deleteComment(commentId);
     setComments((prev) => prev.filter((c) => c.id !== commentId));
   };
 
+  // guarda ou atualiza as métricas reais do conteúdo
   const handleMetricsSubmit = async (e) => {
     e.preventDefault();
     const payload = {
@@ -128,6 +168,7 @@ function AgencyDashboard() {
       shares: metricsForm.shares ? parseInt(metricsForm.shares) : null,
       published_at: metricsForm.published_at || null,
     };
+    // usa update se já existem métricas, create se é a primeira vez
     if (metrics) {
       await updateMetrics(metrics.id, payload);
     } else {
@@ -137,6 +178,7 @@ function AgencyDashboard() {
     setMetrics(updated);
   };
 
+  // abre o modal de detalhe e carrega comentários e métricas do conteúdo
   const handleCardClick = async (card) => {
     setSelectedCard(card);
     setActiveTab('details');
@@ -145,12 +187,14 @@ function AgencyDashboard() {
       title: card.title || '',
       body: card.body || '',
       social_network: card.social_network || 'instagram',
+      // remove a parte de tempo da data para o input type="date"
       scheduled_date: card.scheduled_date ? card.scheduled_date.split('T')[0] : '',
     });
     const commentsData = await getCommentsByCard(card.id);
     setComments(commentsData);
     const metricsData = await getMetricsByCard(card.id);
     setMetrics(metricsData);
+    // pré-preenche o formulário de métricas se já existirem dados
     if (metricsData) {
       setMetricsForm({
         reach: metricsData.reach ?? '',
@@ -164,12 +208,14 @@ function AgencyDashboard() {
     }
   };
 
+  // fecha o modal e limpa os dados do conteúdo selecionado
   const handleCloseModal = () => {
     setSelectedCard(null);
     setComments([]);
     setMetrics(null);
   };
 
+  // abre o modal de criação limpo
   const handleOpenCreate = () => {
     setCreatedCard(null);
     setCreateForm({ title: '', body: '', social_network: 'instagram', scheduled_date: '' });
@@ -177,16 +223,19 @@ function AgencyDashboard() {
     setShowCreateModal(true);
   };
 
+  // adiciona as imagens selecionadas às existentes
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
     const previews = files.map((f) => URL.createObjectURL(f));
     setImagePreviews((prev) => [...prev, ...previews]);
   };
 
+  // remove uma imagem da lista de previews pelo índice
   const handleRemoveImage = (index) => {
     setImagePreviews((prev) => prev.filter((_, i) => i !== index));
   };
 
+  // cria o conteúdo na api e recebe o resultado com a sugestão da ia
   const handleCreateSubmit = async (e) => {
     e.preventDefault();
     setCreateLoading(true);
@@ -197,11 +246,13 @@ function AgencyDashboard() {
     setCards(data);
   };
 
+  // fecha o modal de criação e limpa o resultado da ia
   const handleCloseCreate = () => {
     setShowCreateModal(false);
     setCreatedCard(null);
   };
 
+  // elimina o conteúdo, recarrega o kanban e fecha o modal
   const handleDeleteCard = async () => {
     await deleteCard(selectedCard.id);
     const data = await getCardsByClient(selectedClient.id);
@@ -210,6 +261,7 @@ function AgencyDashboard() {
     handleCloseModal();
   };
 
+  // muda o estado do conteúdo (approved → published) e recarrega o kanban
   const handleStatusChange = async (status) => {
     setStatusLoading(true);
     try {
@@ -225,6 +277,7 @@ function AgencyDashboard() {
     }
   };
 
+  // entra no modo de edição pré-preenchendo o formulário com os dados atuais do conteúdo
   const handleEditOpen = () => {
     setEditForm({
       title: selectedCard.title,
@@ -236,6 +289,7 @@ function AgencyDashboard() {
     setEditMode(true);
   };
 
+  // aceita a sugestão da ia copiando o conteúdo melhorado e hashtags para o formulário de edição
   const handleAcceptAISuggestion = () => {
     if (!aiSuggestion) return;
     const hashtags = aiSuggestion.hashtags?.join(' ') || '';
@@ -245,12 +299,14 @@ function AgencyDashboard() {
     setActiveTab('details');
   };
 
+  // atualiza o preview da imagem de edição
   const handleEditImageChange = (e) => {
     const files = Array.from(e.target.files);
     const previews = files.map((f) => URL.createObjectURL(f));
     setEditImagePreviews(previews);
   };
 
+  // guarda as alterações do conteúdo na api e fecha o modal
   const handleEditSave = async () => {
     try {
       const result = await updateCard(selectedCard.id, editForm);
@@ -268,6 +324,7 @@ function AgencyDashboard() {
     }
   };
 
+  // cria o cliente, recarrega a lista e fecha o drawer
   const handleClientFormSubmit = async (e) => {
     e.preventDefault();
     await createClient({ ...clientForm, color: clientColor });
@@ -278,36 +335,43 @@ function AgencyDashboard() {
     setClientColor('#6366f1');
   };
 
+  // separa os conteúdos nas 3 colunas do kanban
   const inReview  = cards.filter((c) => c.status === 'in_review');
   const approved  = cards.filter((c) => c.status === 'approved');
   const published = cards.filter((c) => c.status === 'published');
 
+  // filtra a lista de clientes com base na pesquisa e no filtro de estado
   const filteredClients = clients.filter((c) => {
     const matchSearch = c.company_name.toLowerCase().includes(search.toLowerCase());
     const matchFilter = filter === 'todos' || (c.status || 'ativo') === filter;
     return matchSearch && matchFilter;
   });
 
+  // contagens para a sidebar de resumo
   const totalClients = clients.length;
   const ativos   = clients.filter((c) => (c.status || 'ativo') === 'ativo').length;
   const inativos = clients.filter((c) => c.status === 'inativo').length;
 
+  // plataformas do cliente selecionado para o cabeçalho do kanban
   const platforms = selectedClient?.social_networks
     ? selectedClient.social_networks.split(',').filter(Boolean)
     : [];
 
+  // normaliza a sugestão da ia — pode vir como string json ou objeto
   const aiSuggestion = selectedCard?.ai_suggestion
     ? typeof selectedCard.ai_suggestion === 'string'
       ? JSON.parse(selectedCard.ai_suggestion)
       : selectedCard.ai_suggestion
     : null;
 
+  // normaliza a previsão de métricas da ia — pode vir como string json ou objeto
   const aiMetrics = selectedCard?.ai_metrics_prediction
     ? typeof selectedCard.ai_metrics_prediction === 'string'
       ? JSON.parse(selectedCard.ai_metrics_prediction)
       : selectedCard.ai_metrics_prediction
     : null;
 
+  // vista do kanban quando um cliente está selecionado
   if (selectedClient) {
     return (
       <div className="agency-full-layout">
@@ -325,6 +389,7 @@ function AgencyDashboard() {
         />
         <div className="board-wrapper">
           <div className="board">
+            {/* 3 colunas do kanban com os conteúdos separados por estado */}
             {[
               { id: 'in_review', label: 'Em revisão', dot: 'dot-review',    items: inReview },
               { id: 'approved',  label: 'Aprovado',   dot: 'dot-approved',  items: approved },
@@ -334,6 +399,7 @@ function AgencyDashboard() {
             ))}
           </div>
         </div>
+        {/* modal de detalhe do conteúdo — só renderiza quando há um conteúdo selecionado */}
         {selectedCard && (
           <CardModal
             selectedCard={selectedCard}
@@ -364,6 +430,7 @@ function AgencyDashboard() {
             handleAcceptAISuggestion={handleAcceptAISuggestion}
           />
         )}
+        {/* modal de criação de conteúdo — só renderiza quando está aberto */}
         {showCreateModal && (
           <CreateCardModal
             createForm={createForm}
@@ -381,6 +448,7 @@ function AgencyDashboard() {
     );
   }
 
+  // vista padrão com a lista de clientes quando nenhum está selecionado
   return (
     <div className="agency-full-layout">
       <AgencyTopnav />
@@ -393,6 +461,7 @@ function AgencyDashboard() {
           onNewClient={() => setShowNewClientModal(true)}
         />
         <div style={{ display: 'flex', alignItems: 'start', gap: '24px' }}>
+          {/* grelha de cards de clientes filtrada por pesquisa e estado */}
           <div className="clients-grid" style={{ flex: 1 }}>
             {filteredClients.map((client) => (
               <ClientCard
@@ -406,6 +475,7 @@ function AgencyDashboard() {
           <ClientsSidebar totalClients={totalClients} ativos={ativos} inativos={inativos} />
         </div>
       </div>
+      {/* drawers de edição e criação — só renderizam quando estão ativos */}
       <EditClientDrawer
         editClientModal={editClientModal}
         setEditClientModal={setEditClientModal}

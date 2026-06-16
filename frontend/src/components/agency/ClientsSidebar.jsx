@@ -1,6 +1,8 @@
+// sidebar lateral com resumo estatístico dos clientes e barras de progresso por estado
 export default function ClientsSidebar({ totalClients, ativos, inativos }) {
   return (
     <div className="clients-sidebar">
+      {/* caixa de resumo com totais */}
       <div className="sidebar-box">
         <p className="sidebar-label">RESUMO</p>
         <div className="sidebar-item">
@@ -19,11 +21,13 @@ export default function ClientsSidebar({ totalClients, ativos, inativos }) {
           <strong>{inativos}</strong>
         </div>
       </div>
+      {/* caixa com barras de progresso proporcional ao total */}
       <div className="sidebar-box">
         <p className="sidebar-label">POR ESTADO</p>
         <div className="sidebar-progress">
           <div className="sidebar-progress__row"><span>Ativo</span><strong>{ativos}</strong></div>
           <div className="progress-bar">
+            {/* largura calculada como percentagem do total de clientes */}
             <div className="progress-bar__fill green" style={{ width: totalClients ? `${(ativos / totalClients) * 100}%` : '0%' }}></div>
           </div>
         </div>

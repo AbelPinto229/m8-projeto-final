@@ -1,3 +1,4 @@
+// secção de serviços com listagem numerada dos 5 serviços da agência
 import { scrollToSection } from '../../utils/smoothScroll';
 
 const ITEMS = [
@@ -16,6 +17,7 @@ export default function Servicos() {
           <p className="label r">O que fazemos</p>
           <h2 className="sec-title r">Serviços que<br /><em>transformam</em> marcas</h2>
         </div>
+        {/* lista de serviços — cada item tem número, tag, título e descrição */}
         <div className="sv-list">
           {ITEMS.map(it => (
             <div key={it.num} className="sv-item r">
@@ -24,6 +26,7 @@ export default function Servicos() {
               <p>{it.desc}</p>
             </div>
           ))}
+          {/* call-to-action no final da lista */}
           <div className="sv-cta r">
             <p>Tens um projeto?</p>
             <a href="#contacto" className="btn-line"

@@ -1,3 +1,4 @@
+// modal de detalhe de um conteúdo com 3 abas: detalhes, sugestão da ia e relatório de métricas
 export default function CardModal({
   selectedCard,
   comments,
@@ -28,6 +29,7 @@ export default function CardModal({
 }) {
   return (
     <>
+      {/* modal de confirmação de eliminação — aparece por cima do modal principal */}
       {showDeleteConfirm && (
         <div className="modal-overlay" style={{ zIndex: 500 }} onClick={() => setShowDeleteConfirm(false)}>
           <div className="modal modal--confirm" onClick={(e) => e.stopPropagation()}>
@@ -46,12 +48,14 @@ export default function CardModal({
       <div className="modal-overlay" onClick={handleCloseModal}>
         <div className="modal" onClick={(e) => e.stopPropagation()}>
           <button className="modal__close" onClick={handleCloseModal}>✕</button>
+          {/* navegação entre as 3 abas do modal */}
           <div className="modal__tabs">
             <button className={activeTab === 'details' ? 'active' : ''} onClick={() => setActiveTab('details')}>Detalhes</button>
             <button className={activeTab === 'ai' ? 'active' : ''} onClick={() => setActiveTab('ai')}>Sugestão IA</button>
             <button className={activeTab === 'report' ? 'active' : ''} onClick={() => setActiveTab('report')}>Relatório</button>
           </div>
 
+          {/* aba de detalhes em modo de visualização */}
           {activeTab === 'details' && !editMode && (
             <div className="modal__content">
               <div className="modal__left">
@@ -61,6 +65,7 @@ export default function CardModal({
                 <p><strong>Rede social:</strong> {selectedCard.social_network}</p>
                 <p><strong>Data planeada:</strong> {selectedCard.scheduled_date ? new Date(selectedCard.scheduled_date).toLocaleDateString('pt-PT') : '—'}</p>
                 <div className="modal__actions">
+                  {/* botão de publicar só aparece quando o conteúdo está aprovado */}
                   {selectedCard.status === 'approved' && (
                     <button onClick={() => handleStatusChange('published')} disabled={statusLoading}>
                       {statusLoading ? 'A publicar...' : 'Publicar'}
@@ -70,6 +75,7 @@ export default function CardModal({
                   <button className="btn-delete" onClick={() => setShowDeleteConfirm(true)}>Eliminar</button>
                 </div>
               </div>
+              {/* coluna de comentários do cliente */}
               <div className="modal__right">
                 <h3>Comentários</h3>
                 {comments.length === 0 && <p>Sem comentários.</p>}
@@ -90,6 +96,7 @@ export default function CardModal({
             </div>
           )}
 
+          {/* aba de detalhes em modo de edição */}
           {activeTab === 'details' && editMode && (
             <div className="modal__content">
               <div className="modal__left">
@@ -143,6 +150,7 @@ export default function CardModal({
                   <button className="btn-cancel" onClick={() => setEditMode(false)}>Cancelar</button>
                 </div>
               </div>
+              {/* preview ao vivo do card enquanto se edita */}
               <div className="modal__right">
                 <div className="card-preview">
                   <p className="card-preview__label">Preview do card</p>
@@ -163,6 +171,7 @@ export default function CardModal({
             </div>
           )}
 
+          {/* aba da sugestão da ia com conteúdo melhorado, hashtags e horário */}
           {activeTab === 'ai' && (
             <div className="modal__ai-tab">
               {!aiSuggestion && <p className="ai-placeholder">Sem sugestão da IA para este card.</p>}
@@ -174,6 +183,7 @@ export default function CardModal({
                         <h3>Conteúdo melhorado</h3>
                         <p>{aiSuggestion.improved_content}</p>
                       </div>
+                      {/* aceitar copia o conteúdo da ia para o formulário de edição */}
                       <button
                         onClick={handleAcceptAISuggestion}
                         style={{
@@ -217,8 +227,10 @@ export default function CardModal({
             </div>
           )}
 
+          {/* aba de relatório com previsão da ia e formulário de métricas reais */}
           {activeTab === 'report' && (
             <div className="modal__report">
+              {/* previsão gerada pela ia no momento da criação do conteúdo */}
               {aiMetrics && (
                 <div className="report-section">
                   <p className="report-section__title">Previsão da IA</p>
@@ -231,6 +243,7 @@ export default function CardModal({
                   {aiMetrics.analysis && <p className="report-analysis">{aiMetrics.analysis}</p>}
                 </div>
               )}
+              {/* formulário para inserir os números reais após publicação */}
               <div className="report-section">
                 <p className="report-section__title">Métricas reais</p>
                 <form onSubmit={handleMetricsSubmit} className="report-form">
@@ -256,6 +269,7 @@ export default function CardModal({
                     <label>Data de publicação</label>
                     <input type="date" value={metricsForm.published_at} onChange={(e) => setMetricsForm({ ...metricsForm, published_at: e.target.value })} />
                   </div>
+                  {/* botão muda de texto consoante já existem métricas ou não */}
                   <button type="submit" className="report-save-btn">
                     {metrics ? 'Atualizar métricas' : 'Guardar métricas'}
                   </button>

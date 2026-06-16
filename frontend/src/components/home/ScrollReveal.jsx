@@ -1,3 +1,5 @@
+// utilitário de animação — observa todos os elementos com classe .r e adiciona .vis quando entram no viewport
+// não renderiza nenhum elemento no DOM — apenas executa o efeito
 import { useEffect } from 'react';
 
 export default function ScrollReveal() {
@@ -6,7 +8,9 @@ export default function ScrollReveal() {
     const obs = new IntersectionObserver(entries => {
       entries.forEach(e => {
         if (e.isIntersecting) {
+          // adiciona a classe .vis que dispara a animação CSS de entrada
           e.target.classList.add('vis');
+          // para de observar o elemento após a primeira vez — a animação só ocorre uma vez
           obs.unobserve(e.target);
         }
       });

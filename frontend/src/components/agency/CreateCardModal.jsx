@@ -1,3 +1,4 @@
+// modal para criar um novo conteúdo com preview ao vivo e sugestões da ia após submissão
 export default function CreateCardModal({
   createForm,
   setCreateForm,
@@ -15,6 +16,7 @@ export default function CreateCardModal({
         <button className="modal__close" onClick={handleCloseCreate}>✕</button>
         <h2 className="modal__title">Novo Conteúdo</h2>
         <div className="modal__content">
+          {/* lado esquerdo com o formulário de criação */}
           <div className="modal__left">
             <form onSubmit={handleCreateSubmit}>
               <div className="form-group">
@@ -61,11 +63,13 @@ export default function CreateCardModal({
               </div>
               <div className="form-group">
                 <label>Imagens</label>
+                {/* permite selecionar múltiplas imagens */}
                 <label className="image-upload-area">
                   <input type="file" accept="image/*" multiple onChange={handleImageChange} />
                   <p>📎 Clica para adicionar imagens</p>
                   <span>PNG, JPG, WEBP</span>
                 </label>
+                {/* miniaturas das imagens selecionadas com botão de remover cada uma */}
                 {imagePreviews.length > 0 && (
                   <div className="image-previews">
                     {imagePreviews.map((src, i) => (
@@ -77,14 +81,17 @@ export default function CreateCardModal({
                   </div>
                 )}
               </div>
+              {/* desativado enquanto a ia está a processar */}
               <button type="submit" className="btn-new" disabled={createLoading}>
                 {createLoading ? 'A analisar...' : 'Guardar e analisar'}
               </button>
             </form>
           </div>
+          {/* lado direito com preview do card e sugestões da ia */}
           <div className="modal__right">
             <div className="card-preview">
               <p className="card-preview__label">Preview do card</p>
+              {/* o preview atualiza em tempo real conforme o utilizador preenche o formulário */}
               <div className="card-preview__box">
                 {imagePreviews.length > 0
                   ? <img src={imagePreviews[0]} alt="preview" className="card-preview__image" />
@@ -98,11 +105,13 @@ export default function CreateCardModal({
                 </div>
               </div>
             </div>
+            {/* estados da sugestão da ia: à espera, a processar ou resultado */}
             {!createdCard && !createLoading && (
               <p className="ai-placeholder">Clica em "Guardar e analisar" para receber sugestões da IA.</p>
             )}
             {createLoading && <p className="ai-placeholder">⏳ A analisar conteúdo...</p>}
             {createdCard?.ai_suggestion && (() => {
+              // ai_suggestion pode vir como string json ou objeto — normaliza aqui
               const ai = typeof createdCard.ai_suggestion === 'string'
                 ? JSON.parse(createdCard.ai_suggestion)
                 : createdCard.ai_suggestion;

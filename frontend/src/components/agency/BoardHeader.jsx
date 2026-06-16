@@ -1,3 +1,4 @@
+// cabeçalho do kanban de um cliente específico com estatísticas e botão de novo conteúdo
 export default function BoardHeader({
   selectedClient,
   selectedClientColor,
@@ -13,7 +14,9 @@ export default function BoardHeader({
     <div className="board-header">
       <div className="board-header__top">
         <div className="board-header__left">
+          {/* botão de voltar à lista de clientes */}
           <button className="btn-back" onClick={handleBack}>← Voltar</button>
+          {/* avatar com a inicial da empresa e a cor do projeto */}
           <div className={`board-header__avatar ${selectedClientColor}`}>
             {selectedClient.company_name.charAt(0)}
           </div>
@@ -21,6 +24,7 @@ export default function BoardHeader({
             <h1>{selectedClient.company_name}</h1>
             <p>{selectedClient.contact_email}</p>
           </div>
+          {/* badge de estado — vermelho se inativo */}
           <span className={`board-header__badge${selectedClient.status === 'inativo' ? ' board-header__badge--inactive' : ''}`}>
             {selectedClient.status === 'inativo' ? 'Inativo' : 'Ativo'}
           </span>
@@ -29,6 +33,7 @@ export default function BoardHeader({
           <button className="btn-new" onClick={handleOpenCreate}>+ Novo Conteúdo</button>
         </div>
       </div>
+      {/* linha de estatísticas rápidas do cliente */}
       <div className="board-header__stats">
         <div className="board-header__stat">
           <span className="stat-label">Conteúdos</span>

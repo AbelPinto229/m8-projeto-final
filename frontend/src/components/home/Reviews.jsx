@@ -1,3 +1,4 @@
+// secção de testemunhos com 4 cards de clientes reais
 const REVIEWS = [
   { ini: 'JM', name: 'João Martins', role: 'Personal Trainer',          quote: 'A OffScroll transformou completamente a presença online do nosso negócio. Em 3 meses triplicámos o engagement.' },
   { ini: 'AS', name: 'Ana Silva',    role: 'Agente Imobiliária',         quote: 'Profissionalismo e criatividade em cada conteúdo. A nossa imobiliária nunca teve tanta visibilidade.' },
@@ -13,11 +14,13 @@ export default function Reviews() {
           <p className="label r">Testemunhos</p>
           <h2 className="sec-title r">Não acredite em nós.<br />Acredite nos nossos<br /><em>clientes.</em></h2>
         </div>
+        {/* grid de cards — cada card tem estrelas, citação e dados do autor */}
         <div className="rv-grid">
           {REVIEWS.map((r, i) => (
             <div key={i} className="rv-card r">
               <div className="rv-stars">★★★★★</div>
               <blockquote>"{r.quote}"</blockquote>
+              {/* avatar com as iniciais do nome e informação do autor */}
               <div className="rv-author">
                 <div className="rv-av">{r.ini}</div>
                 <div><strong>{r.name}</strong><span>{r.role}</span></div>
