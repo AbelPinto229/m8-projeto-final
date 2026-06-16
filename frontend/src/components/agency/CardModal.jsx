@@ -61,11 +61,6 @@ export default function CardModal({
                 <p><strong>Rede social:</strong> {selectedCard.social_network}</p>
                 <p><strong>Data planeada:</strong> {selectedCard.scheduled_date ? new Date(selectedCard.scheduled_date).toLocaleDateString('pt-PT') : '—'}</p>
                 <div className="modal__actions">
-                  {selectedCard.status === 'in_review' && (
-                    <button onClick={() => handleStatusChange('approved')} disabled={statusLoading}>
-                      {statusLoading ? 'A aprovar...' : 'Aprovar'}
-                    </button>
-                  )}
                   {selectedCard.status === 'approved' && (
                     <button onClick={() => handleStatusChange('published')} disabled={statusLoading}>
                       {statusLoading ? 'A publicar...' : 'Publicar'}

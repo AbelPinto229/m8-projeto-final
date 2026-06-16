@@ -10,6 +10,8 @@ export default function ClientCardModal({
   handleCloseModal,
   handleDeleteComment,
   handleCommentSubmit,
+  handleApprove,
+  approveLoading,
 }) {
   return (
     <div className="client-modal-overlay" onClick={handleCloseModal}>
@@ -62,6 +64,16 @@ export default function ClientCardModal({
                   <p className="client-modal__metric-analysis">{aiMetrics.analysis}</p>
                 )}
               </div>
+            )}
+
+            {selectedCard.status === 'in_review' && (
+              <button
+                onClick={handleApprove}
+                disabled={approveLoading}
+                style={{ marginTop: '16px', padding: '10px 20px', background: '#6366f1', color: '#fff', border: 'none', borderRadius: '10px', fontWeight: 700, fontSize: '14px', cursor: 'pointer', width: '100%' }}
+              >
+                {approveLoading ? 'A aprovar...' : 'Aprovar conteúdo'}
+              </button>
             )}
           </div>
 

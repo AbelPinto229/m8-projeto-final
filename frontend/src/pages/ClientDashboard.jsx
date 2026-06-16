@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getClientById, getCardsByClient, getCommentsByCard, createComment, deleteComment } from '../services/api';
+import { getClientById, getCardsByClient, getCommentsByCard, createComment, deleteComment, updateCardStatus } from '../services/api';
 import ClientNavbar       from '../components/client/ClientNavbar';
 import ClientBoardHeader  from '../components/client/ClientBoardHeader';
 import ClientBoardColumn  from '../components/client/ClientBoardColumn';
@@ -19,6 +19,7 @@ function ClientDashboard() {
   const [comments, setComments] = useState([]);
   const [commentForm, setCommentForm] = useState({ message: '', type: 'comment' });
   const [commentLoading, setCommentLoading] = useState(false);
+  const [approveLoading, setApproveLoading] = useState(false);
 
   useEffect(() => {
     getClientById(clientId).then(setClient);
@@ -40,6 +41,15 @@ function ClientDashboard() {
   const handleDeleteComment = async (commentId) => {
     await deleteComment(commentId);
     setComments((prev) => prev.filter((c) => c.id !== commentId));
+  };
+
+  const handleApprove = async () => {
+    setApproveLoading(true);
+    await updateCardStatus(selectedCard.id, 'approved');
+    const data = await getCardsByClient(clientId);
+    setCards(data);
+    setApproveLoading(false);
+    handleCloseModal();
   };
 
   const handleCommentSubmit = async (e) => {
@@ -109,6 +119,8 @@ function ClientDashboard() {
           handleCloseModal={handleCloseModal}
           handleDeleteComment={handleDeleteComment}
           handleCommentSubmit={handleCommentSubmit}
+          handleApprove={handleApprove}
+          approveLoading={approveLoading}
         />
       )}
     </div>

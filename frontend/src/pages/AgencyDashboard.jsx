@@ -20,6 +20,12 @@ import '../styles/AgencyDashboard.css';
 
 const COLORS = ['color-0', 'color-1', 'color-2', 'color-3', 'color-4', 'color-5'];
 
+const VALID_TRANSITIONS = {
+  in_review: ['approved'],
+  approved:  ['published'],
+  published: [],
+};
+
 function AgencyDashboard() {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -283,10 +289,17 @@ function AgencyDashboard() {
     const { destination, source, draggableId } = result;
     if (!destination) return;
     if (destination.droppableId === source.droppableId) return;
-    const newStatus = destination.droppableId;
+
+    const fromStatus = source.droppableId;
+    const toStatus = destination.droppableId;
+
+    if (!VALID_TRANSITIONS[fromStatus]?.includes(toStatus)) return;
+
     const cardId = parseInt(draggableId);
-    setCards((prev) => prev.map((c) => c.id === cardId ? { ...c, status: newStatus } : c));
-    await updateCardStatus(cardId, newStatus);
+    setCards((prev) => prev.map((c) => c.id === cardId ? { ...c, status: toStatus } : c));
+    await updateCardStatus(cardId, toStatus);
+    const data = await getCardsByClient(selectedClient.id);
+    setCards(data);
   };
 
   const inReview  = cards.filter((c) => c.status === 'in_review');
