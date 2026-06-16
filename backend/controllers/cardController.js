@@ -2,17 +2,6 @@
 const cardService = require('../services/cardService');
 const aiService = require('../services/aiService');
 
-// GET /api/cards — todos os cards
-const getAll = async (req, res) => {
-  try {
-    const cards = await cardService.getAll();
-    res.json(cards);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Ocorreu um erro. Tente novamente mais tarde.' });
-  }
-};
-
 // GET /api/cards?client_id=:id — cards de um cliente específico
 const getByClient = async (req, res) => {
   try {
@@ -21,18 +10,6 @@ const getByClient = async (req, res) => {
 
     const cards = await cardService.getByClient(client_id);
     res.json(cards);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Ocorreu um erro. Tente novamente mais tarde.' });
-  }
-};
-
-// GET /api/cards/:id — um card específico
-const getById = async (req, res) => {
-  try {
-    const card = await cardService.getById(req.params.id);
-    if (!card) return res.status(404).json({ error: 'Card não encontrado' });
-    res.json(card);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Ocorreu um erro. Tente novamente mais tarde.' });
@@ -140,4 +117,4 @@ const remove = async (req, res) => {
   }
 };
 
-module.exports = { getAll, getByClient, getById, create, update, updateStatus, remove };
+module.exports = { getByClient, create, update, updateStatus, remove };

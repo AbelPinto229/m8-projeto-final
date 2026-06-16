@@ -37,18 +37,8 @@ export const deleteClient = async (id) => {
 };
 
 // cards
-export const getCards = async () => {
-  const res = await fetch(`${BASE_URL}/cards`);
-  return await res.json();
-};
-
 export const getCardsByClient = async (client_id) => {
   const res = await fetch(`${BASE_URL}/cards/by-client?client_id=${client_id}`);
-  return await res.json();
-};
-
-export const getCardById = async (id) => {
-  const res = await fetch(`${BASE_URL}/cards/${id}`);
   return await res.json();
 };
 

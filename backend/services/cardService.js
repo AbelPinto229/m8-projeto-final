@@ -1,17 +1,6 @@
 // backend/services/cardService.js
 const db = require('../db/connection');
 
-// GET /api/cards
-const getAll = async () => {
-  const [rows] = await db.query(
-    `SELECT cc.*, c.company_name
-       FROM content_cards cc
-       JOIN clients c ON cc.client_id = c.id
-       ORDER BY cc.created_at DESC`
-  );
-  return rows;
-};
-
 // GET /api/cards?client_id=:id
 const getByClient = async (clientId) => {
   const [rows] = await db.query(
@@ -111,4 +100,4 @@ const remove = async (id) => {
   return result.affectedRows > 0;
 };
 
-module.exports = { getAll, getByClient, getById, create, update, updateStatus, updateStatusWithMetrics, remove };
+module.exports = { getByClient, getById, create, update, updateStatus, updateStatusWithMetrics, remove };
