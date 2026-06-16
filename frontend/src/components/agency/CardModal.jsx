@@ -79,7 +79,7 @@ export default function CardModal({
                     className="comment"
                     style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}
                   >
-                    <p><strong>{comment.type}:</strong> {comment.message}</p>
+                    <p><strong>{comment.contact_email}:</strong> {comment.message}</p>
                     <button
                       onClick={() => handleDeleteComment(comment.id)}
                       style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: '12px', flexShrink: 0 }}

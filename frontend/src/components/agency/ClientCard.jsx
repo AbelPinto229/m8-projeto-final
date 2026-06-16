@@ -28,8 +28,7 @@ export default function ClientCard({ client, handleClientClick, handleOpenEditCl
         <p className="proj-card-desc">{formatNetworks(client.social_networks)}</p>
         <div className="proj-card-footer">
           <div className="proj-card-stats">
-            <span className="proj-stat">📄 0</span>
-            <span className="proj-stat">👥 1</span>
+            <span className="proj-stat">📄 {client.card_count}</span>
           </div>
           <div className="proj-members-stack">
             <div

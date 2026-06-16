@@ -566,22 +566,9 @@
   border-radius: 10px;
   padding: 14px;
   margin-bottom: 10px;
-  cursor: grab;
+  cursor: pointer;
   border: 1px solid #e2e8f0;
   transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
-}
-
-.board__card:active {
-  cursor: grabbing;
-}
-
-.board__card * {
-  cursor: grab;
-  pointer-events: none;
-}
-
-.board__card:active * {
-  cursor: grabbing;
 }
 
 .board__card:hover {
@@ -610,17 +597,6 @@
 
 .board__droppable {
   min-height: 60px;
-}
-
-.board__droppable--over {
-  background: #ede9fe;
-  border-radius: 8px;
-}
-
-.board__card--dragging {
-  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.25);
-  border-color: #6366f1;
-  transform: rotate(1deg);
 }
 
 .board__add {
@@ -720,11 +696,16 @@
   gap: 32px;
 }
 
+.modal__content > div {
+  min-width: 0;
+}
+
 .modal__left h2 {
   font-size: 20px;
   font-weight: 700;
   margin-bottom: 12px;
   color: #0f172a;
+  word-break: break-word;
 }
 
 .modal__left img {
@@ -740,6 +721,8 @@
   color: #475569;
   margin-bottom: 8px;
   line-height: 1.6;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .modal__left strong { color: #0f172a; }
@@ -1221,6 +1204,7 @@
   font-weight: 700;
   color: #0f172a;
   margin: 8px 0 6px;
+  word-break: break-word;
 }
 
 .card-preview__body p {
@@ -1231,6 +1215,8 @@
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .card-preview__date {

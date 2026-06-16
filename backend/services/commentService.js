@@ -6,7 +6,11 @@ const db = require('../db/connection');
 // GET /api/comments?card_id=:id
 const getByCard = async (cardId) => {
   const [rows] = await db.query(
-    'SELECT * FROM comments WHERE card_id = ? ORDER BY created_at ASC',
+    `SELECT co.*, cl.contact_email
+       FROM comments co
+       JOIN clients cl ON co.client_id = cl.id
+      WHERE co.card_id = ?
+      ORDER BY co.created_at ASC`,
     [cardId]
   );
   return rows;

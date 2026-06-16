@@ -4,7 +4,11 @@ const db = require('../db/connection');
 // GET /api/clients
 const getAll = async () => {
   const [rows] = await db.query(
-    'SELECT * FROM clients ORDER BY created_at DESC'
+    `SELECT cl.*, COUNT(cc.id) AS card_count
+       FROM clients cl
+       LEFT JOIN content_cards cc ON cc.client_id = cl.id
+      GROUP BY cl.id
+      ORDER BY cl.created_at DESC`
   );
   return rows;
 };
