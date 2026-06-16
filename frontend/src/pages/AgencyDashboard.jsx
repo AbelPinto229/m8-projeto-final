@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { DragDropContext } from '@hello-pangea/dnd';
 import {
   getClients, getCardsByClient, getCommentsByCard, getMetricsByCard,
   updateCardStatus, updateCard, createCard, createClient, updateClient,
@@ -19,12 +18,6 @@ import NewClientDrawer  from '../components/agency/NewClientDrawer';
 import '../styles/AgencyDashboard.css';
 
 const COLORS = ['color-0', 'color-1', 'color-2', 'color-3', 'color-4', 'color-5'];
-
-const VALID_TRANSITIONS = {
-  in_review: ['approved'],
-  approved:  ['published'],
-  published: [],
-};
 
 function AgencyDashboard() {
   const navigate = useNavigate();
@@ -285,23 +278,6 @@ function AgencyDashboard() {
     setClientColor('#6366f1');
   };
 
-  const onDragEnd = async (result) => {
-    const { destination, source, draggableId } = result;
-    if (!destination) return;
-    if (destination.droppableId === source.droppableId) return;
-
-    const fromStatus = source.droppableId;
-    const toStatus = destination.droppableId;
-
-    if (!VALID_TRANSITIONS[fromStatus]?.includes(toStatus)) return;
-
-    const cardId = parseInt(draggableId);
-    setCards((prev) => prev.map((c) => c.id === cardId ? { ...c, status: toStatus } : c));
-    await updateCardStatus(cardId, toStatus);
-    const data = await getCardsByClient(selectedClient.id);
-    setCards(data);
-  };
-
   const inReview  = cards.filter((c) => c.status === 'in_review');
   const approved  = cards.filter((c) => c.status === 'approved');
   const published = cards.filter((c) => c.status === 'published');
@@ -348,17 +324,15 @@ function AgencyDashboard() {
           handleOpenCreate={handleOpenCreate}
         />
         <div className="board-wrapper">
-          <DragDropContext onDragEnd={onDragEnd}>
-            <div className="board">
-              {[
-                { id: 'in_review', label: 'Em revisão', dot: 'dot-review',    items: inReview },
-                { id: 'approved',  label: 'Aprovado',   dot: 'dot-approved',  items: approved },
-                { id: 'published', label: 'Publicado',  dot: 'dot-published', items: published },
-              ].map((col) => (
-                <BoardColumn key={col.id} col={col} handleCardClick={handleCardClick} />
-              ))}
-            </div>
-          </DragDropContext>
+          <div className="board">
+            {[
+              { id: 'in_review', label: 'Em revisão', dot: 'dot-review',    items: inReview },
+              { id: 'approved',  label: 'Aprovado',   dot: 'dot-approved',  items: approved },
+              { id: 'published', label: 'Publicado',  dot: 'dot-published', items: published },
+            ].map((col) => (
+              <BoardColumn key={col.id} col={col} handleCardClick={handleCardClick} />
+            ))}
+          </div>
         </div>
         {selectedCard && (
           <CardModal

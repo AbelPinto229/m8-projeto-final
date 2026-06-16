@@ -1,5 +1,3 @@
-import { Droppable, Draggable } from '@hello-pangea/dnd';
-
 export default function BoardColumn({ col, handleCardClick }) {
   return (
     <div className="board__column">
@@ -10,33 +8,14 @@ export default function BoardColumn({ col, handleCardClick }) {
         </div>
         <span className="board__column-count">{col.items.length}</span>
       </div>
-      <Droppable droppableId={col.id}>
-        {(provided, snapshot) => (
-          <div
-            ref={provided.innerRef}
-            {...provided.droppableProps}
-            className={`board__droppable ${snapshot.isDraggingOver ? 'board__droppable--over' : ''}`}
-          >
-            {col.items.map((card, index) => (
-              <Draggable key={card.id} draggableId={String(card.id)} index={index}>
-                {(provided, snapshot) => (
-                  <div
-                    ref={provided.innerRef}
-                    {...provided.draggableProps}
-                    {...provided.dragHandleProps}
-                    className={`board__card ${snapshot.isDragging ? 'board__card--dragging' : ''}`}
-                    onClick={() => handleCardClick(card)}
-                  >
-                    <h3>{card.title}</h3>
-                    <span className="board__card__tag">{card.social_network}</span>
-                  </div>
-                )}
-              </Draggable>
-            ))}
-            {provided.placeholder}
+      <div className="board__droppable">
+        {col.items.map((card) => (
+          <div key={card.id} className="board__card" onClick={() => handleCardClick(card)}>
+            <h3>{card.title}</h3>
+            <span className="board__card__tag">{card.social_network}</span>
           </div>
-        )}
-      </Droppable>
+        ))}
+      </div>
     </div>
   );
 }
