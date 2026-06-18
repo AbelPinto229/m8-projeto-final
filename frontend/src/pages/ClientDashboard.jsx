@@ -1,7 +1,7 @@
 // página do dashboard do cliente — visualização do kanban com aprovação e comentários
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getClientById, getCardsByClient, getCommentsByCard, createComment, deleteComment, updateCardStatus } from '../services/api';
+import { getClientById, getCardsByClient, getCommentsByCard, createComment, deleteComment, updateCardStatus, getNotificationsForClient, markNotificationsRead } from '../services/api';
 import ClientNavbar       from '../components/client/ClientNavbar';
 import ClientBoardHeader  from '../components/client/ClientBoardHeader';
 import ClientBoardColumn  from '../components/client/ClientBoardColumn';
@@ -30,17 +30,21 @@ function ClientDashboard() {
   const [commentLoading, setCommentLoading] = useState(false);
   // true enquanto a aprovação está a ser processada
   const [approveLoading, setApproveLoading] = useState(false);
+  // notificações do cliente
+  const [notifications, setNotifications] = useState([]);
 
-  // carrega cliente e conteúdos quando o componente monta
+  // carrega cliente, conteúdos e notificações quando o componente monta
   useEffect(() => {
     getClientById(clientId).then(setClient);
     getCardsByClient(clientId).then(setCards);
+    getNotificationsForClient(clientId).then(setNotifications);
   }, [clientId]);
 
   // polling a cada 15s para mostrar novos conteúdos criados pela agência sem refresh manual
   useEffect(() => {
     const interval = setInterval(() => {
       getCardsByClient(clientId).then(setCards);
+      getNotificationsForClient(clientId).then(setNotifications);
     }, 2000);
     return () => clearInterval(interval);
   }, [clientId]);
@@ -126,7 +130,14 @@ function ClientDashboard() {
   return (
     <div className="agency-dashboard">
       {/* logo leva para a home, sair também redireciona para a home */}
-      <ClientNavbar onBrandClick={() => navigate('/')} onLogout={() => navigate('/')} />
+      <ClientNavbar
+        onBrandClick={() => navigate('/')}
+        onLogout={() => navigate('/')}
+        notifications={notifications}
+        onMarkRead={() => markNotificationsRead(clientId, false).then(() =>
+          setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })))
+        )}
+      />
 
       <ClientBoardHeader
         client={client}

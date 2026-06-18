@@ -86,6 +86,8 @@ function AgencyDashboard() {
   const [agencyCommentText, setAgencyCommentText] = useState('');
   // true enquanto o comentário da agência está a ser enviado
   const [agencyCommentLoading, setAgencyCommentLoading] = useState(false);
+  // notificações da agência para o cliente selecionado
+  const [notifications, setNotifications] = useState([]);
 
   // carrega todos os clientes quando o componente monta
   useEffect(() => {
@@ -114,8 +116,15 @@ function AgencyDashboard() {
     const clientId = parseInt(id);
     const interval = setInterval(() => {
       getCardsByClient(clientId).then(setCards);
+      getNotificationsForAgency(clientId).then(setNotifications);
     }, 2000);
     return () => clearInterval(interval);
+  }, [id]);
+
+  // carrega notificações iniciais quando entra no kanban de um cliente
+  useEffect(() => {
+    if (!id) return;
+    getNotificationsForAgency(parseInt(id)).then(setNotifications);
   }, [id]);
 
   // navega para o kanban do cliente alterando a url
@@ -432,7 +441,12 @@ function AgencyDashboard() {
   if (selectedClient) {
     return (
       <div className="agency-full-layout">
-        <AgencyTopnav />
+        <AgencyTopnav
+          notifications={notifications}
+          onMarkRead={() => markNotificationsRead(parseInt(id), true).then(() =>
+            setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })))
+          )}
+        />
         <BoardHeader
           selectedClient={selectedClient}
           selectedClientColor={selectedClientColor}
@@ -512,7 +526,12 @@ function AgencyDashboard() {
   // vista padrão com a lista de clientes quando nenhum está selecionado
   return (
     <div className="agency-full-layout">
-      <AgencyTopnav />
+      <AgencyTopnav
+        notifications={notifications}
+        onMarkRead={() => id && markNotificationsRead(parseInt(id), true).then(() =>
+          setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })))
+        )}
+      />
       <div className="agency-main">
         <ClientListTopbar
           search={search}
