@@ -5,6 +5,7 @@ import {
   getClients, getCardsByClient, getCommentsByCard, getMetricsByCard,
   updateCardStatus, updateCard, createCard, createClient, updateClient,
   deleteCard, deleteClient, deleteComment, createComment, createMetrics, updateMetrics,
+  getNotificationsForAgency, markNotificationsRead,
 } from '../services/api';
 import AgencyTopnav     from '../components/agency/AgencyTopnav';
 import BoardHeader      from '../components/agency/BoardHeader';

@@ -120,6 +120,25 @@ export const updateMetrics = async (id, data) => {
   return await res.json();
 };
 
+// notificações
+export const getNotificationsForAgency = async (client_id) => {
+  const res = await fetch(`${BASE_URL}/notifications/agency?client_id=${client_id}`);
+  return await res.json();
+};
+
+export const getNotificationsForClient = async (client_id) => {
+  const res = await fetch(`${BASE_URL}/notifications/client?client_id=${client_id}`);
+  return await res.json();
+};
+
+export const markNotificationsRead = async (client_id, for_agency) => {
+  await fetch(`${BASE_URL}/notifications/read-all`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ client_id, for_agency }),
+  });
+};
+
 export const submitContact = async (data) => {
   const res = await fetch(`${BASE_URL}/contacts`, {
     method: "POST",
