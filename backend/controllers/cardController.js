@@ -1,6 +1,7 @@
 // backend/controllers/cardController.js
 const cardService = require('../services/cardService');
 const aiService = require('../services/aiService');
+const notificationService = require('../services/notificationService');
 
 // GET /api/cards?client_id=:id — cards de um cliente específico
 const getByClient = async (req, res) => {
@@ -16,7 +17,7 @@ const getByClient = async (req, res) => {
   }
 };
 
-// POST /api/cards — criar card
+// POST /api/cards — criar card e notificar cliente
 const create = async (req, res) => {
   try {
     const { client_id, title, body, image_url, social_network, scheduled_date, review_deadline } = req.body;
@@ -25,11 +26,18 @@ const create = async (req, res) => {
       return res.status(400).json({ error: 'Dados em falta ou inválidos' });
     }
 
-    // Chama a IA para analisar o conteúdo
     const ai_suggestion = await aiService.analyseContent(title, body, social_network, scheduled_date);
 
     const id = await cardService.create({
       client_id, title, body, image_url, social_network, scheduled_date, review_deadline, ai_suggestion,
+    });
+
+    // notifica o cliente que há um novo conteúdo para rever
+    await notificationService.create({
+      client_id,
+      for_agency: false,
+      card_id: id,
+      message: `Novo conteúdo "${title}" está disponível para revisão.`,
     });
 
     res.status(201).json({
@@ -67,7 +75,7 @@ const update = async (req, res) => {
   }
 };
 
-// PATCH /api/cards/:id/status
+// PATCH /api/cards/:id/status — muda estado e dispara notificação
 const updateStatus = async (req, res) => {
   try {
     const { status } = req.body;
@@ -77,20 +85,32 @@ const updateStatus = async (req, res) => {
       return res.status(400).json({ error: 'Dados em falta ou inválidos' });
     }
 
-    // Se for publicado chama a IA para prever métricas
-    if (status === 'published') {
-      const card = await cardService.getById(req.params.id);
-      if (!card) return res.status(404).json({ error: 'Conteúdo não encontrado' });
+    const card = await cardService.getById(req.params.id);
+    if (!card) return res.status(404).json({ error: 'Conteúdo não encontrado' });
 
+    if (status === 'published') {
       const ai_metrics_prediction = await aiService.predictMetrics(
         card.title, card.body, card.social_network
       );
-
       await cardService.updateStatusWithMetrics(req.params.id, status, ai_metrics_prediction);
+
+      // notifica o cliente que o conteúdo foi publicado
+      await notificationService.create({
+        client_id: card.client_id,
+        for_agency: false,
+        card_id: card.id,
+        message: `"${card.title}" foi publicado.`,
+      });
     } else {
-      // Só actualiza o status para aprovado e guarda timestamp
-      const ok = await cardService.updateStatus(req.params.id, status);
-      if (!ok) return res.status(404).json({ error: 'Conteúdo não encontrado' });
+      // approved — vem do lado do cliente, notifica a agência
+      await cardService.updateStatus(req.params.id, status);
+
+      await notificationService.create({
+        client_id: card.client_id,
+        for_agency: true,
+        card_id: card.id,
+        message: `O cliente aprovou "${card.title}".`,
+      });
     }
 
     res.json({ message: `Estado actualizado para ${status}` });
