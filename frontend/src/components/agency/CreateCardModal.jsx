@@ -52,7 +52,7 @@ export default function CreateCardModal({
                   </select>
                 </div>
                 <div className="form-group">
-                  <label>Data limite *</label>
+                  <label>Data de publicação *</label>
                   <input
                     type="date"
                     value={createForm.scheduled_date}
@@ -60,6 +60,14 @@ export default function CreateCardModal({
                     required
                   />
                 </div>
+              </div>
+              <div className="form-group">
+                <label>Data limite de revisão</label>
+                <input
+                  type="date"
+                  value={createForm.review_deadline}
+                  onChange={(e) => setCreateForm({ ...createForm, review_deadline: e.target.value })}
+                />
               </div>
               <div className="form-group">
                 <label>Imagens</label>
@@ -98,10 +106,22 @@ export default function CreateCardModal({
                   : <div className="card-preview__image-placeholder">📷 Sem imagem</div>
                 }
                 <div className="card-preview__body">
-                  <span className="board__card__tag">{createForm.social_network || 'instagram'}</span>
                   <h3>{createForm.title || 'Título do conteúdo'}</h3>
-                  <p>{createForm.body || 'Descrição do conteúdo...'}</p>
-                  {createForm.scheduled_date && <p className="card-preview__date">📅 {createForm.scheduled_date}</p>}
+                  {createForm.scheduled_date && (
+                    <p className="card-preview__date" style={{ color: '#6366f1', margin: '4px 0 2px', fontSize: '12px' }}>
+                      📅 Publicação: {createForm.scheduled_date.split('-').slice(1).reverse().join('/')}
+                    </p>
+                  )}
+                  <div className="board__card__row">
+                    <span className="board__card__tag">{createForm.social_network || 'instagram'}</span>
+                    <div className="board__card__row-right">
+                      {createForm.review_deadline && (
+                        <span className="board__card__deadline">
+                          ⏱ Data Limite: {createForm.review_deadline.split('-').slice(1).reverse().join('/')}
+                        </span>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

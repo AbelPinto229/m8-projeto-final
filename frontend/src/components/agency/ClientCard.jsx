@@ -28,7 +28,10 @@ export default function ClientCard({ client, handleClientClick, handleOpenEditCl
         <span className="proj-card-name">{client.company_name}</span>
         {/* stopPropagation para não abrir o cliente ao clicar em editar */}
         <button className="proj-card-edit-btn" onClick={(e) => handleOpenEditClient(e, client)}>Editar</button>
-        {isInativo && <span className="proj-card-status-tag">Inativo</span>}
+        {isInativo
+          ? <span className="proj-card-status-tag">Inativo</span>
+          : <span className="proj-card-status-tag proj-card-status-tag--ativo">Ativo</span>
+        }
       </div>
       <div className="proj-card-body">
         {/* redes sociais formatadas em texto legível */}

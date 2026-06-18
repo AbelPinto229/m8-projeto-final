@@ -26,9 +26,19 @@ export default function ClientCardModal({
           <div className="client-modal__meta">
             <span className="board__card__tag">{selectedCard.social_network}</span>
             <span className="client-modal__meta-text">{STATUS_LABELS[selectedCard.status]}</span>
-            {selectedCard.scheduled_date && (
+            {selectedCard.status === 'in_review' && selectedCard.scheduled_date && (
               <span className="client-modal__meta-text">
                 {new Date(selectedCard.scheduled_date).toLocaleDateString('pt-PT')}
+              </span>
+            )}
+            {selectedCard.status === 'approved' && selectedCard.approved_at && (
+              <span className="client-modal__meta-text">
+                {new Date(selectedCard.approved_at).toLocaleDateString('pt-PT')}
+              </span>
+            )}
+            {selectedCard.status === 'published' && selectedCard.published_at && (
+              <span className="client-modal__meta-text">
+                {new Date(selectedCard.published_at).toLocaleDateString('pt-PT')}
               </span>
             )}
           </div>
@@ -93,9 +103,9 @@ export default function ClientCardModal({
                 ? <p className="client-chat__empty">Sem comentários ainda.</p>
                 : comments.map((comment) => (
                     <div key={comment.id} className="client-chat__bubble" style={{ position: 'relative' }}>
-                      {/* tipo do comentário: comentário ou sugestão */}
+                      {/* email de quem escreveu o comentário */}
                       <p className="client-chat__bubble-type">
-                        {comment.type === 'suggestion' ? 'Sugestão' : 'Comentário'}
+                        {comment.contact_email}
                       </p>
                       <p className="client-chat__bubble-text">{comment.message}</p>
                       <button
@@ -106,29 +116,29 @@ export default function ClientCardModal({
                   ))
               }
             </div>
-            {/* formulário para enviar novo comentário ou sugestão */}
-            <form onSubmit={handleCommentSubmit} className="client-chat__form">
-              <select
-                className="client-chat__type-select"
-                value={commentForm.type}
-                onChange={(e) => setCommentForm({ ...commentForm, type: e.target.value })}
-              >
-                <option value="comment">Comentário</option>
-                <option value="suggestion">Sugestão</option>
-              </select>
-              <div className="client-chat__input-row">
-                <textarea
-                  className="client-chat__textarea"
-                  placeholder="Escreve o teu comentário..."
-                  value={commentForm.message}
-                  onChange={(e) => setCommentForm({ ...commentForm, message: e.target.value })}
-                  required
-                />
-                <button type="submit" className="client-chat__send" disabled={commentLoading}>
-                  {commentLoading ? '...' : 'Enviar'}
-                </button>
-              </div>
-            </form>
+            {/* formulário só aparece em revisão — aprovado e publicado estão fechados a comentários */}
+            {selectedCard.status === 'in_review'
+              ? (
+                <form onSubmit={handleCommentSubmit} className="client-chat__form">
+                  <div className="client-chat__input-row">
+                    <textarea
+                      className="client-chat__textarea"
+                      placeholder="Escreve o teu comentário..."
+                      value={commentForm.message}
+                      onChange={(e) => setCommentForm({ ...commentForm, message: e.target.value })}
+                      required
+                    />
+                    <button type="submit" className="client-chat__send" disabled={commentLoading}>
+                      {commentLoading ? '...' : 'Enviar'}
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                <p style={{ fontSize: '12px', color: '#94a3b8', textAlign: 'center', padding: '12px 0' }}>
+                  Comentários encerrados após aprovação.
+                </p>
+              )
+            }
           </div>
         </div>
       </div>

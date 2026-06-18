@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import {
   getClients, getCardsByClient, getCommentsByCard, getMetricsByCard,
   updateCardStatus, updateCard, createCard, createClient, updateClient,
-  deleteCard, deleteClient, deleteComment, createMetrics, updateMetrics,
+  deleteCard, deleteClient, deleteComment, createComment, createMetrics, updateMetrics,
 } from '../services/api';
 import AgencyTopnav     from '../components/agency/AgencyTopnav';
 import BoardHeader      from '../components/agency/BoardHeader';
@@ -17,6 +17,7 @@ import ClientsSidebar   from '../components/agency/ClientsSidebar';
 import EditClientDrawer from '../components/agency/EditClientDrawer';
 import NewClientDrawer  from '../components/agency/NewClientDrawer';
 import '../styles/AgencyDashboard.css';
+import '../styles/ClientDashboard.css';
 
 // cores de fallback para clientes sem cor definida — atribuídas por id
 const COLORS = ['color-0', 'color-1', 'color-2', 'color-3', 'color-4', 'color-5'];
@@ -45,7 +46,7 @@ function AgencyDashboard() {
   // controla visibilidade do modal de criação de conteúdo
   const [showCreateModal, setShowCreateModal] = useState(false);
   // dados do formulário de criação de conteúdo
-  const [createForm, setCreateForm] = useState({ title: '', body: '', social_network: 'instagram', scheduled_date: '' });
+  const [createForm, setCreateForm] = useState({ title: '', body: '', social_network: 'instagram', scheduled_date: '', review_deadline: '' });
   // dados do formulário de métricas reais
   const [metricsForm, setMetricsForm] = useState({ reach: '', likes: '', comments_count: '', shares: '', published_at: '' });
   // urls de preview das imagens selecionadas no formulário de criação
@@ -80,6 +81,10 @@ function AgencyDashboard() {
   const [editClientForm, setEditClientForm] = useState({ company_name: '', social_networks: '', status: 'ativo', color: 'color-0' });
   // controla visibilidade do modal de confirmação de eliminação de cliente
   const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
+  // texto do campo de comentário da agência no modal de detalhe
+  const [agencyCommentText, setAgencyCommentText] = useState('');
+  // true enquanto o comentário da agência está a ser enviado
+  const [agencyCommentLoading, setAgencyCommentLoading] = useState(false);
 
   // carrega todos os clientes quando o componente monta
   useEffect(() => {
@@ -101,6 +106,16 @@ function AgencyDashboard() {
       }
     }
   }, [id, clients]);
+
+  // polling a cada 2s para refletir aprovações e alterações do cliente sem refresh
+  useEffect(() => {
+    if (!id) return;
+    const clientId = parseInt(id);
+    const interval = setInterval(() => {
+      getCardsByClient(clientId).then(setCards);
+    }, 2000);
+    return () => clearInterval(interval);
+  }, [id]);
 
   // navega para o kanban do cliente alterando a url
   const handleClientClick = (client) => {
@@ -151,10 +166,48 @@ function AgencyDashboard() {
     setEditClientModal(null);
   };
 
-  // elimina um comentário da lista localmente sem re-fetch
+  // elimina um comentário e decrementa o contador no kanban
   const handleDeleteComment = async (commentId) => {
     await deleteComment(commentId);
     setComments((prev) => prev.filter((c) => c.id !== commentId));
+    setCards((prev) => prev.map((c) =>
+      c.id === selectedCard.id
+        ? { ...c, comment_count: Math.max(0, (c.comment_count || 1) - 1) }
+        : c
+    ));
+  };
+
+  // envia feedback da agência como comentário — aparece no lado do cliente com o remetente "Agência"
+  const handleAgencyCommentSubmit = async (e) => {
+    e.preventDefault();
+    if (!agencyCommentText.trim()) return;
+    setAgencyCommentLoading(true);
+    try {
+      const newComment = await createComment({
+        card_id: selectedCard.id,
+        client_id: selectedCard.client_id,
+        message: agencyCommentText,
+        type: 'comment',
+        contact_email: 'Agência',
+      });
+      if (newComment.error) {
+        alert('Erro ao enviar comentário: ' + newComment.error);
+        return;
+      }
+      // injeta o contact_email localmente para aparecer sem re-fetch
+      setComments((prev) => [...prev, { ...newComment, contact_email: 'Agência' }]);
+      setAgencyCommentText('');
+      setCards((prev) => prev.map((c) =>
+        c.id === selectedCard.id
+          ? { ...c, comment_count: (c.comment_count || 0) + 1, last_comment_at: new Date().toISOString() }
+          : c
+      ));
+    } catch (err) {
+      console.error('Erro ao enviar comentário:', err);
+      alert('Erro ao enviar comentário. Tenta novamente.');
+    } finally {
+      setAgencyCommentLoading(false);
+    }
   };
 
   // guarda ou atualiza as métricas reais do conteúdo
@@ -189,6 +242,7 @@ function AgencyDashboard() {
       social_network: card.social_network || 'instagram',
       // remove a parte de tempo da data para o input type="date"
       scheduled_date: card.scheduled_date ? card.scheduled_date.split('T')[0] : '',
+      review_deadline: card.review_deadline ? card.review_deadline.split('T')[0] : '',
     });
     const commentsData = await getCommentsByCard(card.id);
     setComments(commentsData);
@@ -213,12 +267,13 @@ function AgencyDashboard() {
     setSelectedCard(null);
     setComments([]);
     setMetrics(null);
+    setAgencyCommentText('');
   };
 
   // abre o modal de criação limpo
   const handleOpenCreate = () => {
     setCreatedCard(null);
-    setCreateForm({ title: '', body: '', social_network: 'instagram', scheduled_date: '' });
+    setCreateForm({ title: '', body: '', social_network: 'instagram', scheduled_date: '', review_deadline: '' });
     setImagePreviews([]);
     setShowCreateModal(true);
   };
@@ -284,6 +339,7 @@ function AgencyDashboard() {
       body: selectedCard.body,
       social_network: selectedCard.social_network,
       scheduled_date: selectedCard.scheduled_date?.split('T')[0] || '',
+      review_deadline: selectedCard.review_deadline?.split('T')[0] || '',
     });
     setEditImagePreviews(selectedCard.image_url ? [selectedCard.image_url] : []);
     setEditMode(true);
@@ -428,6 +484,10 @@ function AgencyDashboard() {
             handleMetricsSubmit={handleMetricsSubmit}
             handleDeleteCard={handleDeleteCard}
             handleAcceptAISuggestion={handleAcceptAISuggestion}
+            agencyCommentText={agencyCommentText}
+            setAgencyCommentText={setAgencyCommentText}
+            agencyCommentLoading={agencyCommentLoading}
+            handleAgencyCommentSubmit={handleAgencyCommentSubmit}
           />
         )}
         {/* modal de criação de conteúdo — só renderiza quando está aberto */}

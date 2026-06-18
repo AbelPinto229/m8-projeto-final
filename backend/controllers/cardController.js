@@ -19,7 +19,7 @@ const getByClient = async (req, res) => {
 // POST /api/cards — criar card
 const create = async (req, res) => {
   try {
-    const { client_id, title, body, image_url, social_network, scheduled_date } = req.body;
+    const { client_id, title, body, image_url, social_network, scheduled_date, review_deadline } = req.body;
 
     if (!client_id || !title || !body || !social_network || !scheduled_date) {
       return res.status(400).json({ error: 'Dados em falta ou inválidos' });
@@ -29,13 +29,14 @@ const create = async (req, res) => {
     const ai_suggestion = await aiService.analyseContent(title, body, social_network, scheduled_date);
 
     const id = await cardService.create({
-      client_id, title, body, image_url, social_network, scheduled_date, ai_suggestion,
+      client_id, title, body, image_url, social_network, scheduled_date, review_deadline, ai_suggestion,
     });
 
     res.status(201).json({
       id,
       client_id, title, body, social_network,
       status: 'in_review',
+      review_deadline: review_deadline || null,
       ai_suggestion,
       link: `/cliente/${client_id}`,
     });
@@ -48,14 +49,14 @@ const create = async (req, res) => {
 // PUT /api/cards/:id — editar card
 const update = async (req, res) => {
   try {
-    const { title, body, image_url, social_network, scheduled_date } = req.body;
+    const { title, body, image_url, social_network, scheduled_date, review_deadline } = req.body;
 
     if (!title || !body || !social_network || !scheduled_date) {
       return res.status(400).json({ error: 'Dados em falta ou inválidos' });
     }
 
     const ok = await cardService.update(req.params.id, {
-      title, body, image_url, social_network, scheduled_date,
+      title, body, image_url, social_network, scheduled_date, review_deadline,
     });
     if (!ok) return res.status(404).json({ error: 'Card não encontrado' });
 
@@ -87,7 +88,7 @@ const updateStatus = async (req, res) => {
 
       await cardService.updateStatusWithMetrics(req.params.id, status, ai_metrics_prediction);
     } else {
-      // Só actualiza o status para aprovado
+      // Só actualiza o status para aprovado e guarda timestamp
       const ok = await cardService.updateStatus(req.params.id, status);
       if (!ok) return res.status(404).json({ error: 'Conteúdo não encontrado' });
     }

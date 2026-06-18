@@ -26,6 +26,10 @@ export default function CardModal({
   handleMetricsSubmit,
   handleDeleteCard,
   handleAcceptAISuggestion,
+  agencyCommentText,
+  setAgencyCommentText,
+  agencyCommentLoading,
+  handleAgencyCommentSubmit,
 }) {
   return (
     <>
@@ -75,23 +79,47 @@ export default function CardModal({
                   <button className="btn-delete" onClick={() => setShowDeleteConfirm(true)}>Eliminar</button>
                 </div>
               </div>
-              {/* coluna de comentários do cliente */}
+              {/* coluna de comentários — agência pode ler e também escrever feedback */}
               <div className="modal__right">
                 <h3>Comentários</h3>
-                {comments.length === 0 && <p>Sem comentários.</p>}
-                {comments.map((comment) => (
-                  <div
-                    key={comment.id}
-                    className="comment"
-                    style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}
-                  >
-                    <p><strong>{comment.contact_email}:</strong> {comment.message}</p>
-                    <button
-                      onClick={() => handleDeleteComment(comment.id)}
-                      style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: '12px', flexShrink: 0 }}
-                    >✕</button>
-                  </div>
-                ))}
+                <div className="client-chat__messages">
+                  {comments.length === 0
+                    ? <p className="client-chat__empty">Sem comentários ainda.</p>
+                    : comments.map((comment) => (
+                        <div key={comment.id} className="client-chat__bubble" style={{ position: 'relative' }}>
+                          <p className="client-chat__bubble-type">{comment.contact_email}</p>
+                          <p className="client-chat__bubble-text">{comment.message}</p>
+                          <button
+                            onClick={() => handleDeleteComment(comment.id)}
+                            style={{ position: 'absolute', top: '8px', right: '8px', background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: '11px', opacity: 0.6 }}
+                          >✕</button>
+                        </div>
+                      ))
+                  }
+                </div>
+                {/* formulário de feedback só disponível enquanto o card está em revisão */}
+                {selectedCard.status === 'in_review'
+                  ? (
+                    <form onSubmit={handleAgencyCommentSubmit} className="client-chat__form" style={{ marginTop: '0.5rem' }}>
+                      <div className="client-chat__input-row">
+                        <textarea
+                          className="client-chat__textarea"
+                          placeholder="Escreve feedback para o cliente..."
+                          value={agencyCommentText}
+                          onChange={(e) => setAgencyCommentText(e.target.value)}
+                          required
+                        />
+                        <button type="submit" className="client-chat__send" disabled={agencyCommentLoading}>
+                          {agencyCommentLoading ? '...' : 'Enviar'}
+                        </button>
+                      </div>
+                    </form>
+                  ) : (
+                    <p style={{ fontSize: '12px', color: '#94a3b8', textAlign: 'center', padding: '12px 0' }}>
+                      Comentários encerrados após aprovação.
+                    </p>
+                  )
+                }
               </div>
             </div>
           )}
@@ -129,13 +157,21 @@ export default function CardModal({
                     </select>
                   </div>
                   <div className="form-group">
-                    <label>Data limite</label>
+                    <label>Data de publicação</label>
                     <input
                       type="date"
                       value={editForm.scheduled_date}
                       onChange={(e) => setEditForm({ ...editForm, scheduled_date: e.target.value })}
                     />
                   </div>
+                </div>
+                <div className="form-group">
+                  <label>Data limite de revisão</label>
+                  <input
+                    type="date"
+                    value={editForm.review_deadline || ''}
+                    onChange={(e) => setEditForm({ ...editForm, review_deadline: e.target.value })}
+                  />
                 </div>
                 <div className="form-group">
                   <label>Imagem</label>
@@ -160,10 +196,22 @@ export default function CardModal({
                       : <div className="card-preview__image-placeholder">📷 Sem imagem</div>
                     }
                     <div className="card-preview__body">
-                      <span className="board__card__tag">{editForm.social_network}</span>
                       <h3>{editForm.title}</h3>
-                      <p>{editForm.body}</p>
-                      {editForm.scheduled_date && <p className="card-preview__date">📅 {editForm.scheduled_date}</p>}
+                      {editForm.scheduled_date && (
+                        <p className="card-preview__date" style={{ color: '#6366f1', margin: '4px 0 2px', fontSize: '12px' }}>
+                          📅 Publicação: {editForm.scheduled_date.split('-').slice(1).reverse().join('/')}
+                        </p>
+                      )}
+                      <div className="board__card__row">
+                        <span className="board__card__tag">{editForm.social_network}</span>
+                        <div className="board__card__row-right">
+                          {editForm.review_deadline && (
+                            <span className="board__card__deadline">
+                              ⏱ Data Limite: {editForm.review_deadline.split('-').slice(1).reverse().join('/')}
+                            </span>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>

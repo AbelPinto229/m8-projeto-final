@@ -24,7 +24,8 @@ function ClientDashboard() {
   // comentários do conteúdo aberto
   const [comments, setComments] = useState([]);
   // dados do formulário de novo comentário
-  const [commentForm, setCommentForm] = useState({ message: '', type: 'comment' });
+  // type fixo em 'comment' — o dropdown foi removido
+  const [commentForm, setCommentForm] = useState({ message: '' });
   // true enquanto o comentário está a ser enviado para a api
   const [commentLoading, setCommentLoading] = useState(false);
   // true enquanto a aprovação está a ser processada
@@ -36,10 +37,18 @@ function ClientDashboard() {
     getCardsByClient(clientId).then(setCards);
   }, [clientId]);
 
+  // polling a cada 15s para mostrar novos conteúdos criados pela agência sem refresh manual
+  useEffect(() => {
+    const interval = setInterval(() => {
+      getCardsByClient(clientId).then(setCards);
+    }, 2000);
+    return () => clearInterval(interval);
+  }, [clientId]);
+
   // abre o modal e carrega os comentários do conteúdo clicado
   const handleCardClick = async (card) => {
     setSelectedCard(card);
-    setCommentForm({ message: '', type: 'comment' });
+    setCommentForm({ message: '' });
     const data = await getCommentsByCard(card.id);
     setComments(data);
   };
@@ -50,10 +59,15 @@ function ClientDashboard() {
     setComments([]);
   };
 
-  // elimina um comentário da lista localmente sem re-fetch
+  // elimina um comentário e decrementa o contador no kanban
   const handleDeleteComment = async (commentId) => {
     await deleteComment(commentId);
     setComments((prev) => prev.filter((c) => c.id !== commentId));
+    setCards((prev) => prev.map((c) =>
+      c.id === selectedCard.id
+        ? { ...c, comment_count: Math.max(0, (c.comment_count || 1) - 1) }
+        : c
+    ));
   };
 
   // aprova o conteúdo, recarrega o kanban e fecha o modal
@@ -75,11 +89,18 @@ function ClientDashboard() {
       card_id: selectedCard.id,
       client_id: clientId,
       message: commentForm.message,
-      type: commentForm.type,
+      type: 'comment',
     });
-    setComments((prev) => [...prev, newComment]);
-    setCommentForm({ message: '', type: 'comment' });
+    // injeta o email do cliente localmente para aparecer sem re-fetch
+    setComments((prev) => [...prev, { ...newComment, contact_email: client.contact_email }]);
+    setCommentForm({ message: '' });
     setCommentLoading(false);
+    // atualiza o comment_count do card no kanban sem re-fetch
+    setCards((prev) => prev.map((c) =>
+      c.id === selectedCard.id
+        ? { ...c, comment_count: (c.comment_count || 0) + 1, last_comment_at: new Date().toISOString() }
+        : c
+    ));
   };
 
   // separa os conteúdos nas 3 colunas do kanban

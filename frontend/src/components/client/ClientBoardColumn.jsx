@@ -1,8 +1,17 @@
-// coluna do kanban do cliente — versão de leitura com data de publicação em cada card
+// coluna do kanban do cliente — versão de leitura
+function formatDate(iso) {
+  if (!iso) return null;
+  return new Date(iso).toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit' });
+}
+
+function formatDateTime(iso) {
+  if (!iso) return null;
+  return new Date(iso).toLocaleString('pt-PT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+}
+
 export default function ClientBoardColumn({ col, handleCardClick }) {
   return (
     <div className="board__column">
-      {/* cabeçalho com dot colorido, nome da coluna e contagem de itens */}
       <div className="board__column-header">
         <div className="board__column-header-left">
           <span className={`board__column-dot ${col.dot}`}></span>
@@ -10,20 +19,34 @@ export default function ClientBoardColumn({ col, handleCardClick }) {
         </div>
         <span className="board__column-count">{col.items.length}</span>
       </div>
-      {/* mensagem vazia ou lista de cards consoante existam conteúdos */}
       {col.items.length === 0
         ? <p className="client-column__empty">Sem conteúdos</p>
         : col.items.map((card) => (
             <div key={card.id} className="board-card" onClick={() => handleCardClick(card)}>
               <p className="board-card__title">{card.title}</p>
-              <div className="board-card__footer">
+              {/* data de publicação planeada — todas as colunas */}
+              {card.scheduled_date && (
+                <p style={{ margin: '4px 0 2px', fontSize: '11px', color: '#6366f1' }}>
+                  📅 Publicação: {formatDate(card.scheduled_date)}
+                </p>
+              )}
+              {/* linha com tag + info contextual + comentários, tudo no mesmo nível */}
+              <div className="board__card__row">
                 <span className="board__card__tag">{card.social_network}</span>
-                {/* data de publicação formatada em pt-PT quando existe */}
-                {card.scheduled_date && (
-                  <span className="board-card__date">
-                    {new Date(card.scheduled_date).toLocaleDateString('pt-PT')}
-                  </span>
-                )}
+                <div className="board__card__row-right">
+                  {col.id === 'in_review' && card.review_deadline && (
+                    <span className="board__card__deadline">⏱ Data Limite: {formatDate(card.review_deadline)}</span>
+                  )}
+                  {col.id === 'approved' && card.approved_at && (
+                    <span className="board__card__approved">✓ {formatDateTime(card.approved_at)}</span>
+                  )}
+                  {col.id === 'published' && card.published_at && (
+                    <span className="board__card__published">📅 {formatDate(card.published_at)}</span>
+                  )}
+                  {card.comment_count > 0 && (
+                    <span className="board__card__comments">💬 {card.comment_count}</span>
+                  )}
+                </div>
               </div>
             </div>
           ))
