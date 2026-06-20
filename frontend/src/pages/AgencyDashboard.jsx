@@ -1,11 +1,13 @@
 // página principal do dashboard da agência — gere clientes, conteúdos, comentários e métricas
 import { useEffect, useState } from 'react';
+import { useAuth } from '../context/AuthContext.jsx';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   getClients, getCardsByClient, getCommentsByCard, getMetricsByCard,
   updateCardStatus, updateCard, createCard, createClient, updateClient,
   deleteCard, deleteClient, deleteComment, createComment, createMetrics, updateMetrics,
   getNotificationsForAgency, markNotificationsRead, markNotificationRead,
+  createClientUser,
 } from '../services/api';
 import AgencyTopnav     from '../components/agency/AgencyTopnav';
 import BoardHeader      from '../components/agency/BoardHeader';
@@ -25,6 +27,7 @@ const COLORS = ['color-0', 'color-1', 'color-2', 'color-3', 'color-4', 'color-5'
 
 function AgencyDashboard() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   // id vem da url quando um cliente está selecionado (/agencia/cliente/:id)
   const { id } = useParams();
 
@@ -62,8 +65,10 @@ function AgencyDashboard() {
   const [filter, setFilter] = useState('todos');
   // controla visibilidade do drawer de criação de cliente
   const [showNewClientModal, setShowNewClientModal] = useState(false);
+  // mensagem de erro do formulário de novo cliente
+  const [clientError, setClientError] = useState('');
   // dados do formulário de novo cliente
-  const [clientForm, setClientForm] = useState({ company_name: '', contact_email: '', social_networks: '' });
+  const [clientForm, setClientForm] = useState({ company_name: '', contact_email: '', client_name: '', social_networks: '', password: '' });
   // cor selecionada para o novo cliente
   const [clientColor, setClientColor] = useState('#6366f1');
   // true enquanto a mudança de estado do conteúdo está a ser processada
@@ -88,6 +93,16 @@ function AgencyDashboard() {
   const [agencyCommentLoading, setAgencyCommentLoading] = useState(false);
   // notificações da agência para o cliente selecionado
   const [notifications, setNotifications] = useState([]);
+
+  // verifica se o token é válido — redireciona para login se não for
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const response = fetch("http://localhost:5000/api/auth/dashboard", {
+      headers: { Authorization: `Bearer ${token}` }
+    }).then(res => {
+      if (!res.ok) navigate("/login");
+    });
+  }, []);
 
   // carrega todos os clientes quando o componente monta
   useEffect(() => {
@@ -390,14 +405,23 @@ function AgencyDashboard() {
     }
   };
 
-  // cria o cliente, recarrega a lista e fecha o drawer
+  // cria o cliente e o utilizador de acesso do cliente num só passo
   const handleClientFormSubmit = async (e) => {
     e.preventDefault();
-    await createClient({ ...clientForm, color: clientColor });
+    const newClient = await createClient({ ...clientForm, color: clientColor });
+    if (newClient.error) {
+      setClientError(newClient.error);
+      return;
+    }
+    setClientError('');
+    if (newClient.id && clientForm.password) {
+      await createClientUser(clientForm.contact_email, clientForm.password, newClient.id, clientForm.client_name);
+    }
     const data = await getClients();
     setClients(data);
     setShowNewClientModal(false);
-    setClientForm({ company_name: '', contact_email: '', social_networks: '' });
+    setClientError('');
+    setClientForm({ company_name: '', contact_email: '', client_name: '', social_networks: '', password: '' });
     setClientColor('#6366f1');
   };
 
@@ -408,7 +432,8 @@ function AgencyDashboard() {
 
   // filtra a lista de clientes com base na pesquisa e no filtro de estado
   const filteredClients = clients.filter((c) => {
-    const matchSearch = c.company_name.toLowerCase().includes(search.toLowerCase());
+    const q = search.toLowerCase();
+    const matchSearch = c.company_name.toLowerCase().includes(q) || (c.contact_email || '').toLowerCase().includes(q);
     const matchFilter = filter === 'todos' || (c.status || 'ativo') === filter;
     return matchSearch && matchFilter;
   });
@@ -537,6 +562,9 @@ function AgencyDashboard() {
         }}
       />
       <div className="agency-main">
+        <h2 style={{ margin: '0 0 20px', fontSize: '2rem', fontWeight: 700, color: '#0f172a', lineHeight: 1.1 }}>
+          Olá, <span style={{ background: 'linear-gradient(90deg, #a855f7, #ec4899, #f97316)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>{user?.name ?? 'Agência'}.</span>
+        </h2>
         <ClientListTopbar
           search={search}
           setSearch={setSearch}
@@ -578,6 +606,7 @@ function AgencyDashboard() {
         clientColor={clientColor}
         setClientColor={setClientColor}
         handleClientFormSubmit={handleClientFormSubmit}
+        errorMsg={clientError}
       />
     </div>
   );

@@ -1,9 +1,11 @@
 // barra de navegação superior do dashboard da agência com link para a home e notificações
 import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext.jsx';
 
 export default function AgencyTopnav({ notifications = [], onNotifClick }) {
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
   const unread = notifications.filter((n) => !n.is_read).length;
@@ -49,7 +51,7 @@ export default function AgencyTopnav({ notifications = [], onNotifClick }) {
           </div>
         )}
         </div>
-        <button className="client-navbar__logout" onClick={() => navigate('/')}>Sair</button>
+        <button className="client-navbar__logout" onClick={() => { logout(); navigate('/login'); }}>Log out</button>
       </div>
     </nav>
   );
