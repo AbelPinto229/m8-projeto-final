@@ -11,8 +11,9 @@ const transporter = nodemailer.createTransport({
 const create = async (req, res) => {
   try {
     const { nome, email, servico, mensagem } = req.body;
-    if (!nome || !email || !mensagem) {
-      return res.status(400).json({ error: 'Nome, email e mensagem são obrigatórios.' });
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((email || '').trim());
+    if (!nome || !email || !mensagem || !emailOk) {
+      return res.status(400).json({ error: 'Nome, email válido e mensagem são obrigatórios.' });
     }
 
     await transporter.sendMail({

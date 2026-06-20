@@ -23,9 +23,10 @@ export default function Contacto() {
   async function onSubmit(e) {
     e.preventDefault();
     // valida campos obrigatórios 
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim());
     const errs = new Set();
     if (!form.nome.trim())     errs.add('nome');
-    if (!form.email.trim())    errs.add('email');
+    if (!form.email.trim() || !emailOk) errs.add('email');
     if (!form.mensagem.trim()) errs.add('mensagem');
     if (errs.size) { setErrFields(errs); return; }
 
