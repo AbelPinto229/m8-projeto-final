@@ -33,6 +33,11 @@ const create = async (req, res) => {
       return res.status(400).json({ error: 'Dados em falta ou inválidos' });
     }
 
+    const exists = await clientService.nameExists(company_name);
+    if (exists) {
+      return res.status(409).json({ error: 'Já existe um projeto com esse nome.' });
+    }
+
     const id = await clientService.create({
       company_name, contact_email, logo_url, social_networks, color,
     });
@@ -80,4 +85,24 @@ const remove = async (req, res) => {
   }
 };
 
-module.exports = { getAll, getById, create, update, remove };
+// GET /api/clients/mine — projetos do cliente autenticado (por email)
+const getMine = async (req, res) => {
+  try {
+    const db = require('../db/connection');
+    const [rows] = await db.query(
+      `SELECT cl.*, COUNT(cc.id) AS card_count
+         FROM clients cl
+         LEFT JOIN content_cards cc ON cc.client_id = cl.id
+        WHERE cl.contact_email = ?
+        GROUP BY cl.id
+        ORDER BY cl.created_at DESC`,
+      [req.user.email]
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Ocorreu um erro. Tente novamente mais tarde.' });
+  }
+};
+
+module.exports = { getAll, getById, create, update, remove, getMine };

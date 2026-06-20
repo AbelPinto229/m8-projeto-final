@@ -22,6 +22,15 @@ const getById = async (id) => {
   return rows[0] || null;
 };
 
+// verifica se já existe um projeto com esse nome
+const nameExists = async (company_name) => {
+  const [rows] = await db.query(
+    'SELECT id FROM clients WHERE company_name = ?',
+    [company_name]
+  );
+  return rows.length > 0;
+};
+
 // POST /api/clients
 const create = async ({ company_name, contact_email, logo_url, social_networks, color }) => {
   const [result] = await db.query(
@@ -66,4 +75,4 @@ const remove = async (id) => {
   return result.affectedRows > 0;
 };
 
-module.exports = { getAll, getById, create, update, remove };
+module.exports = { getAll, getById, create, update, remove, nameExists };
