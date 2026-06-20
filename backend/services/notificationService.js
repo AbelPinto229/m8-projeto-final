@@ -31,4 +31,8 @@ const markAllRead = async (client_id, for_agency) => {
   );
 };
 
-module.exports = { create, getForAgency, getForClient, markAllRead };
+const markOneRead = async (id) => {
+  await db.query('UPDATE notifications SET is_read = 1 WHERE id = ?', [id]);
+};
+
+module.exports = { create, getForAgency, getForClient, markAllRead, markOneRead };

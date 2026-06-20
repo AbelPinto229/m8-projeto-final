@@ -103,15 +103,19 @@ export default function ClientCardModal({
                 ? <p className="client-chat__empty">Sem comentários ainda.</p>
                 : comments.map((comment) => (
                     <div key={comment.id} className="client-chat__bubble" style={{ position: 'relative' }}>
-                      {/* email de quem escreveu o comentário */}
-                      <p className="client-chat__bubble-type">
-                        {comment.contact_email}
-                      </p>
+                      <p className="client-chat__bubble-type">{comment.contact_email}</p>
                       <p className="client-chat__bubble-text">{comment.message}</p>
-                      <button
-                        onClick={() => handleDeleteComment(comment.id)}
-                        style={{ position: 'absolute', top: '8px', right: '8px', background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: '11px', opacity: 0.6 }}
-                      >✕</button>
+                      {comment.created_at && (
+                        <p className="client-chat__bubble-time">
+                          {new Date(comment.created_at).toLocaleString('pt-PT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                        </p>
+                      )}
+                      {comment.contact_email !== 'Agência' && (
+                        <button
+                          onClick={() => handleDeleteComment(comment.id)}
+                          style={{ position: 'absolute', top: '8px', right: '8px', background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: '11px', opacity: 0.6 }}
+                        >✕</button>
+                      )}
                     </div>
                   ))
               }

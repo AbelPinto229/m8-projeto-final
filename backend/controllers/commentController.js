@@ -37,29 +37,36 @@ const create = async (req, res) => {
       card_id, client_id, message, type: commentType, contact_email,
     });
 
-    // notifica a parte contrária sobre o novo comentário
-    const card = await cardService.getById(card_id);
-    if (card) {
-      const isAgency = contact_email === 'Agência';
-      await notificationService.create({
-        client_id: card.client_id,
-        for_agency: !isAgency,
-        card_id: card.id,
-        message: isAgency
-          ? `A agência comentou em "${card.title}".`
-          : `Novo comentário do cliente em "${card.title}".`,
-      });
-    }
+    const now = new Date().toISOString();
 
     res.status(201).json({
       id,
       card_id, client_id, message,
       type: commentType,
       contact_email: contact_email || null,
+      created_at: now,
     });
+
+    // notificação após resposta — falha silenciosa para não bloquear o comentário
+    try {
+      const card = await cardService.getById(card_id);
+      if (card) {
+        const isAgency = contact_email === 'Agência';
+        await notificationService.create({
+          client_id: card.client_id,
+          for_agency: !isAgency,
+          card_id: card.id,
+          message: isAgency
+            ? `A agência comentou em "${card.title}".`
+            : `Novo comentário do cliente em "${card.title}".`,
+        });
+      }
+    } catch (notifErr) {
+      console.error('Erro ao criar notificação de comentário:', notifErr);
+    }
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Ocorreu um erro. Tente novamente mais tarde.' });
+    if (!res.headersSent) res.status(500).json({ error: 'Ocorreu um erro. Tente novamente mais tarde.' });
   }
 };
 

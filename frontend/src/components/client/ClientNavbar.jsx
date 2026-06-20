@@ -1,7 +1,7 @@
 // barra de navegação do dashboard do cliente com logo, notificações e botão de sair
 import { useState, useRef, useEffect } from 'react';
 
-export default function ClientNavbar({ onBrandClick, onLogout, notifications = [], onMarkRead }) {
+export default function ClientNavbar({ onBrandClick, onLogout, notifications = [], onNotifClick }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
   const unread = notifications.filter((n) => !n.is_read).length;
@@ -13,9 +13,11 @@ export default function ClientNavbar({ onBrandClick, onLogout, notifications = [
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  const handleOpen = () => {
-    setOpen((prev) => !prev);
-    if (!open && unread > 0) onMarkRead?.();
+  const handleOpen = () => setOpen((prev) => !prev);
+
+  const handleNotifClick = (n) => {
+    setOpen(false);
+    onNotifClick?.(n);
   };
 
   return (
@@ -33,10 +35,10 @@ export default function ClientNavbar({ onBrandClick, onLogout, notifications = [
           {open && (
             <div className="notif-dropdown notif-dropdown--right">
               <p className="notif-dropdown__title">Notificações</p>
-              {notifications.length === 0
-                ? <p className="notif-dropdown__empty">Sem notificações.</p>
-                : notifications.map((n) => (
-                    <div key={n.id} className={`notif-item ${n.is_read ? 'notif-item--read' : ''}`}>
+              {unread === 0
+                ? <p className="notif-dropdown__empty">Sem notificações novas.</p>
+                : notifications.filter((n) => !n.is_read).map((n) => (
+                    <div key={n.id} className="notif-item" style={{ cursor: 'pointer' }} onClick={() => handleNotifClick(n)}>
                       <p className="notif-item__msg">{n.message}</p>
                       <p className="notif-item__time">{new Date(n.created_at).toLocaleString('pt-PT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}</p>
                     </div>

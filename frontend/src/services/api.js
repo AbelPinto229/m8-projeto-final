@@ -139,6 +139,10 @@ export const markNotificationsRead = async (client_id, for_agency) => {
   });
 };
 
+export const markNotificationRead = async (id) => {
+  await fetch(`${BASE_URL}/notifications/${id}/read`, { method: 'PATCH' });
+};
+
 export const submitContact = async (data) => {
   const res = await fetch(`${BASE_URL}/contacts`, {
     method: "POST",

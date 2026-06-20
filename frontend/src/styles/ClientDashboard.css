@@ -315,6 +315,13 @@
   overflow-wrap: anywhere;
 }
 
+.client-chat__bubble-time {
+  font-size: 10px;
+  color: #94a3b8;
+  margin-top: 4px;
+  text-align: right;
+}
+
 .client-chat__form {
   padding: 12px 24px 18px;
   border-top: 1px solid #f1f5f9;

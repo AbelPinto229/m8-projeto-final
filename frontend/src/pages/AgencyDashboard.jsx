@@ -5,7 +5,7 @@ import {
   getClients, getCardsByClient, getCommentsByCard, getMetricsByCard,
   updateCardStatus, updateCard, createCard, createClient, updateClient,
   deleteCard, deleteClient, deleteComment, createComment, createMetrics, updateMetrics,
-  getNotificationsForAgency, markNotificationsRead,
+  getNotificationsForAgency, markNotificationsRead, markNotificationRead,
 } from '../services/api';
 import AgencyTopnav     from '../components/agency/AgencyTopnav';
 import BoardHeader      from '../components/agency/BoardHeader';
@@ -443,9 +443,11 @@ function AgencyDashboard() {
       <div className="agency-full-layout">
         <AgencyTopnav
           notifications={notifications}
-          onMarkRead={() => markNotificationsRead(parseInt(id), true).then(() =>
-            setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })))
-          )}
+          onNotifClick={(n) => {
+            markNotificationRead(n.id);
+            setNotifications((prev) => prev.filter((x) => x.id !== n.id));
+            navigate(`/agencia/cliente/${n.client_id}`);
+          }}
         />
         <BoardHeader
           selectedClient={selectedClient}
@@ -528,9 +530,11 @@ function AgencyDashboard() {
     <div className="agency-full-layout">
       <AgencyTopnav
         notifications={notifications}
-        onMarkRead={() => id && markNotificationsRead(parseInt(id), true).then(() =>
-          setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })))
-        )}
+        onNotifClick={(n) => {
+          markNotificationRead(n.id);
+          setNotifications((prev) => prev.filter((x) => x.id !== n.id));
+          navigate(`/agencia/cliente/${n.client_id}`);
+        }}
       />
       <div className="agency-main">
         <ClientListTopbar

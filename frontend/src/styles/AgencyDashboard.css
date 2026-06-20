@@ -1434,10 +1434,11 @@
   transition: background .15s;
 }
 .notif-item:last-child { border-bottom: none; }
-.notif-item--read { background: #fff; }
+.notif-item--read { display: none; }
 
 .notif-item__msg {
   font-size: 13px;
+  font-weight: 700;
   color: #1e293b;
   margin: 0 0 3px;
   line-height: 1.4;
