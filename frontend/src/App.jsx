@@ -1,22 +1,25 @@
-// define todas as rotas da aplicação
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Home from './pages/Home';
-import AgencyDashboard from './pages/AgencyDashboard';
-import ClientDashboard from './pages/ClientDashboard';
+import { AuthProvider } from './context/AuthContext.jsx';
+import Home                from './pages/Home';
+import Login               from './pages/Login';
+import AgencyDashboard     from './pages/AgencyDashboard';
+import ClientDashboard     from './pages/ClientDashboard';
+import ClientProjectSelect from './pages/ClientProjectSelect';
+
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-            {/* página inicial pública */}
-            <Route path="/" element={<Home />} />
-            {/* dashboard da agência — lista de clientes */}
-            <Route path="/agencia" element={<AgencyDashboard />} />
-            {/* dashboard da agência com um cliente específico aberto no kanban */}
-            <Route path="/agencia/cliente/:id" element={<AgencyDashboard />} />
-            {/* dashboard do cliente — acesso por id */}
-            <Route path="/cliente/:id" element={<ClientDashboard />} />
-      </Routes>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/"                        element={<Home />} />
+          <Route path="/login"                   element={<Login />} />
+          <Route path="/agencia"                 element={<AgencyDashboard />} />
+          <Route path="/agencia/cliente/:id"     element={<AgencyDashboard />} />
+          <Route path="/meus-projetos"            element={<ClientProjectSelect />} />
+          <Route path="/cliente/:id"             element={<ClientDashboard />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

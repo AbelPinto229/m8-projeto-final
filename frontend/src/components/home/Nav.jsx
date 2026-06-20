@@ -42,7 +42,7 @@ export default function Nav() {
           <li><a href="#portfolio"  onClick={e => handleLink(e, '#portfolio')}>Portfólio</a></li>
           <li><a href="#reviews"    onClick={e => handleLink(e, '#reviews')}>Clientes</a></li>
           <li><a href="#contacto" className="nav-cta" onClick={e => handleLink(e, '#contacto')}>Vamos conversar</a></li>
-          <li><Link to="/agencia" className="nav-cliente">Área Reservada</Link></li>
+          <li><Link to="/login" className="nav-cliente">Área Reservada</Link></li>
         </ul>
         {/* botão hamburger para mobile — alterna entre aberto e fechado */}
         <button className={`hamburger${open ? ' open' : ''}`} onClick={() => setOpen(o => !o)} aria-label="Menu">
@@ -60,7 +60,7 @@ export default function Nav() {
           <li><a href="#contacto"   className="mob-link" onClick={e => handleLink(e, '#contacto')}>Vamos conversar</a></li>
         </ul>
         <div className="mob-actions">
-          <Link to="/agencia" className="mob-cliente-btn" onClick={() => setOpen(false)}>Área Reservada</Link>
+          <Link to="/login" className="mob-cliente-btn" onClick={() => setOpen(false)}>Área Reservada</Link>
         </div>
         <p className="mob-tagline">Conectamos marcas<br />a pessoas reais.</p>
       </div>
