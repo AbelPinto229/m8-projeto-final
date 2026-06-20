@@ -1,43 +1,31 @@
-const express = require('express');
-const router = express.Router();
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const db = require('../db/connection');
+const express        = require('express');
+const router         = express.Router();
+const auth           = require('../middleware/auth');
+const authController = require('../controllers/authController');
 
-// POST /api/auth/login
-router.post('/login', async (req, res) => {
-  try {
-    const { email, password } = req.body;
+// rota pública — recebe email e password no body, devolve token JWT
+// chamada pelo Login.jsx quando o utilizador carrega em "Entrar"
+router.post('/login', authController.login);
 
-    if (!email || !password) {
-      return res.status(400).json({ message: 'Email e password são obrigatórios' });
-    }
+// rota protegida — agência cria o acesso (login+password) para um cliente ao criar projeto
+router.post('/create-client-user', auth, authController.createClientUser);
 
-    const [results] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
+// rota protegida — verifica se um email já tem conta criada (usado no drawer para esconder campos de password)
+router.get('/check-email', auth, authController.checkEmail);
 
-    if (results.length === 0) {
-      return res.status(401).json({ message: 'Credenciais inválidas' });
-    }
-
-    const user = results[0];
-
-    const validPassword = await bcrypt.compare(password, user.password);
-
-    if (!validPassword) {
-      return res.status(401).json({ message: 'Credenciais inválidas' });
-    }
-
-    const token = jwt.sign(
-      { id: user.id, email: user.email },
-      process.env.JWT_SECRET,
-      { expiresIn: '1h' }
-    );
-
-    res.json({ token });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Erro interno do servidor' });
+// rota protegida — verifica se o token é válido
+// o middleware auth corre antes do handler e bloqueia se o token for inválido
+// usada pelas dashboards ao abrir para confirmar que o utilizador está autenticado
+// se o token for válido responde com os dados do utilizador (req.user)
+router.get(
+  "/dashboard",
+  auth,
+  (req, res) => {
+    res.json({
+      message: "Área protegida",
+      user: req.user  // dados descodificados do token: { id, email, role }
+    });
   }
-});
+);
 
 module.exports = router;
