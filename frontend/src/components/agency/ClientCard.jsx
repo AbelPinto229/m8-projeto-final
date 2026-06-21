@@ -9,7 +9,7 @@ const formatNetworks = (str) =>
         .map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join(', ')
     : '';
 
-export default function ClientCard({ client, handleClientClick, handleOpenEditClient }) {
+export default function ClientCard({ client, handleClientClick, handleOpenEditClient, showEdit = true, showStatus = true }) {
   const isInativo = client.status === 'inativo';
   // cor personalizada definida pela agência, ou cor de fallback baseada no id
   const cardColor = client.color || null;
@@ -26,12 +26,13 @@ export default function ClientCard({ client, handleClientClick, handleOpenEditCl
         style={!isInativo && cardColor ? { background: cardColor } : undefined}
       >
         <span className="proj-card-name">{client.company_name}</span>
-        {/* stopPropagation para não abrir o cliente ao clicar em editar */}
-        <button className="proj-card-edit-btn" onClick={(e) => handleOpenEditClient(e, client)}>Editar</button>
-        {isInativo
+        {showEdit && (
+          <button className="proj-card-edit-btn" onClick={(e) => handleOpenEditClient(e, client)}>Editar</button>
+        )}
+        {showStatus && (isInativo
           ? <span className="proj-card-status-tag">Inativo</span>
           : <span className="proj-card-status-tag proj-card-status-tag--ativo">Ativo</span>
-        }
+        )}
       </div>
       <div className="proj-card-body">
         {/* redes sociais formatadas em texto legível */}

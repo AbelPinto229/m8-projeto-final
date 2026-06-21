@@ -18,10 +18,7 @@ export default function EditClientDrawer({
     <>
       <div className="drawer-overlay" onClick={() => setEditClientModal(null)}>
         <div className="drawer" onClick={(e) => e.stopPropagation()}>
-          <div className="drawer__header">
-            <h2>Editar Projeto</h2>
-            <button className="modal__close" onClick={() => setEditClientModal(null)}>✕</button>
-          </div>
+          <p style={{ fontWeight: 700, fontSize: '1.1rem', color: '#0f172a', margin: '24px 0 16px' }}>Editar Projeto</p>
           <form className="drawer__form" onSubmit={handleEditClientSubmit}>
             <div className="form-group">
               <label>Nome do projeto *</label>

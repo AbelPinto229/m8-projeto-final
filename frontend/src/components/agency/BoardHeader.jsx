@@ -1,4 +1,6 @@
 // cabeçalho do kanban de um cliente específico com estatísticas e botão de novo conteúdo
+const COLORS = ['color-0', 'color-1', 'color-2', 'color-3', 'color-4', 'color-5'];
+
 export default function BoardHeader({
   selectedClient,
   selectedClientColor,
@@ -10,6 +12,11 @@ export default function BoardHeader({
   handleBack,
   handleOpenCreate,
 }) {
+  // se a cor é hex usa inline style, se é classe css usa className
+  const isHex      = selectedClientColor && selectedClientColor.startsWith('#');
+  const avatarClass = isHex ? 'board-header__avatar' : `board-header__avatar ${selectedClientColor || COLORS[selectedClient.id % COLORS.length]}`;
+  const avatarStyle = isHex ? { background: selectedClientColor } : undefined;
+
   return (
     <div className="board-header">
       <div className="board-header__top">
@@ -17,7 +24,7 @@ export default function BoardHeader({
           {/* botão de voltar à lista de clientes */}
           <button className="btn-back" onClick={handleBack}>← Voltar</button>
           {/* avatar com a inicial da empresa e a cor do projeto */}
-          <div className={`board-header__avatar ${selectedClientColor}`}>
+          <div className={avatarClass} style={avatarStyle}>
             {selectedClient.company_name.charAt(0)}
           </div>
           <div className="board-header__info">

@@ -11,6 +11,8 @@ export default function Contacto() {
   const [okShown, setOkShown]     = useState(false);
   // set com os nomes dos campos obrigatórios que estão vazios — usados para borda vermelha
   const [errFields, setErrFields] = useState(new Set());
+  // mensagem de erro visível quando o formulário falha a validação
+  const [errMsg, setErrMsg]       = useState('');
 
   // atualiza um campo e remove o erro desse campo se existia
   function update(k, v) {
@@ -28,7 +30,12 @@ export default function Contacto() {
     if (!form.nome.trim())     errs.add('nome');
     if (!form.email.trim() || !emailOk) errs.add('email');
     if (!form.mensagem.trim()) errs.add('mensagem');
-    if (errs.size) { setErrFields(errs); return; }
+    if (errs.size) {
+      setErrFields(errs);
+      setErrMsg(errs.has('email') && form.email.trim() ? 'Email inválido.' : 'Por favor preenche todos os campos obrigatórios.');
+      return;
+    }
+    setErrMsg('');
 
     setBusy(true);
     try {
@@ -95,6 +102,7 @@ export default function Contacto() {
                 <textarea rows={5} placeholder="Conta-nos sobre o teu projeto..." required style={fieldStyle('mensagem')}
                   value={form.mensagem} onChange={e => update('mensagem', e.target.value)} />
               </div>
+              {errMsg && <p style={{ color: '#c0392b', fontSize: '0.85rem', margin: '0 0 8px' }}>{errMsg}</p>}
               {/* botão desativado enquanto o pedido está em curso */}
               <button type="submit" className="btn-submit" disabled={busy}>
                 <span>{busy ? 'A enviar...' : 'Enviar mensagem'}</span>
