@@ -104,13 +104,14 @@ function AgencyDashboard() {
     });
   }, []);
 
-  // carrega todos os clientes quando o componente monta
+  // carrega clientes e notificações em paralelo ao montar
   useEffect(() => {
-    const fetchClients = async () => {
-      const data = await getClients();
+    getClients().then((data) => {
       setClients(data);
-    };
-    fetchClients();
+      // assim que os clientes chegam, busca notificações imediatamente
+      Promise.all(data.map((c) => getNotificationsForAgency(c.id)))
+        .then((results) => setNotifications(results.flat()));
+    });
   }, []);
 
   // quando a url tem um id e os clientes já foram carregados, abre o cliente correspondente
@@ -125,22 +126,27 @@ function AgencyDashboard() {
     }
   }, [id, clients]);
 
-  // polling a cada 2s para refletir aprovações e alterações do cliente sem refresh
+  // polling de cards quando está dentro de um cliente
   useEffect(() => {
     if (!id) return;
     const clientId = parseInt(id);
     const interval = setInterval(() => {
       getCardsByClient(clientId).then(setCards);
-      getNotificationsForAgency(clientId).then(setNotifications);
     }, 2000);
     return () => clearInterval(interval);
   }, [id]);
 
-  // carrega notificações iniciais quando entra no kanban de um cliente
+  // polling de notificações de TODOS os clientes — sempre ativo independente de onde está
   useEffect(() => {
-    if (!id) return;
-    getNotificationsForAgency(parseInt(id)).then(setNotifications);
-  }, [id]);
+    if (clients.length === 0) return;
+    const fetchAllNotifs = () => {
+      Promise.all(clients.map((c) => getNotificationsForAgency(c.id)))
+        .then((results) => setNotifications(results.flat()));
+    };
+    fetchAllNotifs();
+    const interval = setInterval(fetchAllNotifs, 2000);
+    return () => clearInterval(interval);
+  }, [clients]);
 
   // navega para o kanban do cliente alterando a url
   const handleClientClick = (client) => {
@@ -324,6 +330,7 @@ function AgencyDashboard() {
     setCreateLoading(false);
     const data = await getCardsByClient(selectedClient.id);
     setCards(data);
+    getClients().then(setClients);
   };
 
   // fecha o modal de criação e limpa o resultado da ia
@@ -337,6 +344,7 @@ function AgencyDashboard() {
     await deleteCard(selectedCard.id);
     const data = await getCardsByClient(selectedClient.id);
     setCards(data);
+    getClients().then(setClients);
     setShowDeleteConfirm(false);
     handleCloseModal();
   };

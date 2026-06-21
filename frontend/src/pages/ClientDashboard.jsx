@@ -1,7 +1,7 @@
 // página do dashboard do cliente — visualização do kanban com aprovação e comentários
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getClientById, getCardsByClient, getCommentsByCard, createComment, deleteComment, updateCardStatus, getNotificationsForClient, markNotificationsRead, markNotificationRead } from '../services/api';
+import { getClientById, getCardsByClient, getCommentsByCard, createComment, deleteComment, updateCardStatus, getNotificationsForClient, markNotificationsRead, markNotificationRead, getMyClients } from '../services/api';
 import ClientNavbar       from '../components/client/ClientNavbar';
 import ClientBoardHeader  from '../components/client/ClientBoardHeader';
 import ClientBoardColumn  from '../components/client/ClientBoardColumn';
@@ -30,8 +30,10 @@ function ClientDashboard() {
   const [commentLoading, setCommentLoading] = useState(false);
   // true enquanto a aprovação está a ser processada
   const [approveLoading, setApproveLoading] = useState(false);
-  // notificações do cliente
+  // notificações do cliente (de todos os projetos)
   const [notifications, setNotifications] = useState([]);
+  // ids de todos os projetos do cliente — começa vazio, só faz polling depois de carregar
+  const [allProjectIds, setAllProjectIds] = useState([]);
 
   // verifica se o token é válido — redireciona para login se não for
   useEffect(() => {
@@ -43,21 +45,38 @@ function ClientDashboard() {
     });
   }, []);
 
-  // carrega cliente, conteúdos e notificações quando o componente monta
+  // carrega cliente, conteúdos e notificações de todos os projetos ao montar
   useEffect(() => {
     getClientById(clientId).then(setClient);
     getCardsByClient(clientId).then(setCards);
-    getNotificationsForClient(clientId).then(setNotifications);
+    getMyClients().then((data) => {
+      if (!Array.isArray(data)) return;
+      const ids = data.map((p) => p.id);
+      setAllProjectIds(ids);
+      // busca notificações imediatamente sem esperar pelo intervalo
+      Promise.all(ids.map((id) => getNotificationsForClient(id)))
+        .then((results) => setNotifications(results.flat()));
+    });
   }, [clientId]);
 
-  // polling a cada 15s para mostrar novos conteúdos criados pela agência sem refresh manual
+  // polling de cards e notificações (de todos os projetos) a cada 2s
   useEffect(() => {
     const interval = setInterval(() => {
       getCardsByClient(clientId).then(setCards);
-      getNotificationsForClient(clientId).then(setNotifications);
+      Promise.all(allProjectIds.map((id) => getNotificationsForClient(id)))
+        .then((results) => setNotifications(results.flat()));
     }, 2000);
     return () => clearInterval(interval);
-  }, [clientId]);
+  }, [clientId, allProjectIds]);
+
+  // polling de comentários quando o modal está aberto
+  useEffect(() => {
+    if (!selectedCard) return;
+    const interval = setInterval(() => {
+      getCommentsByCard(selectedCard.id).then(setComments);
+    }, 2000);
+    return () => clearInterval(interval);
+  }, [selectedCard?.id]);
 
   // abre o modal e carrega os comentários do conteúdo clicado
   const handleCardClick = async (card) => {
