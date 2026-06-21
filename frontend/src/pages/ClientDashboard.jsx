@@ -33,6 +33,16 @@ function ClientDashboard() {
   // notificações do cliente
   const [notifications, setNotifications] = useState([]);
 
+  // verifica se o token é válido — redireciona para login se não for
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    fetch("http://localhost:5000/api/auth/dashboard", {
+      headers: { Authorization: `Bearer ${token}` }
+    }).then(res => {
+      if (!res.ok) navigate("/login");
+    });
+  }, []);
+
   // carrega cliente, conteúdos e notificações quando o componente monta
   useEffect(() => {
     getClientById(clientId).then(setClient);
@@ -128,7 +138,7 @@ function ClientDashboard() {
   if (!client) return <div className="agency-dashboard" style={{ padding: '2rem', color: '#94a3b8' }}>A carregar...</div>;
 
   return (
-    <div className="agency-dashboard">
+    <div className="agency-full-layout">
       {/* logo leva para a home, sair também redireciona para a home */}
       <ClientNavbar
         onBrandClick={() => navigate('/')}
@@ -147,6 +157,7 @@ function ClientDashboard() {
         approved={approved}
         published={published}
         platforms={platforms}
+        onBack={() => navigate('/meus-projetos')}
       />
 
       <div className="board-wrapper">

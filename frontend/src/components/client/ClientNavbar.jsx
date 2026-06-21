@@ -1,7 +1,11 @@
 // barra de navegação do dashboard do cliente com logo, notificações e botão de sair
 import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext.jsx';
 
 export default function ClientNavbar({ onBrandClick, onLogout, notifications = [], onNotifClick }) {
+  const navigate = useNavigate();
+  const { logout } = useAuth();
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
   const unread = notifications.filter((n) => !n.is_read).length;
@@ -47,7 +51,7 @@ export default function ClientNavbar({ onBrandClick, onLogout, notifications = [
             </div>
           )}
         </div>
-        <button className="client-navbar__logout" onClick={onLogout}>Sair</button>
+        <button className="client-navbar__logout" onClick={() => { logout(); navigate('/login'); }}>Log out</button>
       </div>
     </nav>
   );
