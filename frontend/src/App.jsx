@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext.jsx';
 import Home                from './pages/Home';
 import Login               from './pages/Login';
+import ForgotPassword      from './pages/ForgotPassword';
+import ResetPassword       from './pages/ResetPassword';
 import AgencyDashboard     from './pages/AgencyDashboard';
 import ClientDashboard     from './pages/ClientDashboard';
 import ClientProjectSelect from './pages/ClientProjectSelect';
@@ -13,9 +15,11 @@ function App() {
         <Routes>
           <Route path="/"                        element={<Home />} />
           <Route path="/login"                   element={<Login />} />
+          <Route path="/esqueci-password"        element={<ForgotPassword />} />
+          <Route path="/reset-password"          element={<ResetPassword />} />
           <Route path="/agencia"                 element={<AgencyDashboard />} />
           <Route path="/agencia/cliente/:id"     element={<AgencyDashboard />} />
-          <Route path="/meus-projetos"            element={<ClientProjectSelect />} />
+          <Route path="/meus-projetos"           element={<ClientProjectSelect />} />
           <Route path="/cliente/:id"             element={<ClientDashboard />} />
         </Routes>
       </BrowserRouter>

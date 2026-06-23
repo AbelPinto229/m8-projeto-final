@@ -141,6 +141,12 @@ export default function Login() {
             <button type="submit" className="btn-auth" disabled={loading}>
               {loading ? <div className="spinner" style={{ display: 'block' }} /> : <span>Entrar</span>}
             </button>
+
+            <p style={{ textAlign: 'center', marginTop: '16px', fontSize: '0.88rem', color: '#64748b' }}>
+              <Link to="/esqueci-password" style={{ color: '#833AB4', fontWeight: 600, textDecoration: 'none' }}>
+                Esqueceste a password?
+              </Link>
+            </p>
           </form>
 
         </div>
