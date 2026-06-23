@@ -1,6 +1,9 @@
-const jwt         = require('jsonwebtoken');
-const bcrypt      = require('bcryptjs');
-const authService = require('../services/authService');
+const jwt          = require('jsonwebtoken');
+const bcrypt       = require('bcryptjs');
+const crypto       = require('crypto');
+const authService  = require('../services/authService');
+const emailService = require('../services/emailService');
+const db           = require('../db/connection');
 
 const login = async (req, res) => {
   try {
@@ -104,6 +107,55 @@ const createClientUser = async (req, res) => {
   }
 };
 
+const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ error: 'Email é obrigatório.' });
+
+    const user = await authService.findUserByEmail(email);
+    // responde sempre com sucesso para não revelar se o email existe ou não
+    if (!user) return res.json({ message: 'Se o email existir, receberás um link em breve.' });
+
+    const token  = crypto.randomBytes(32).toString('hex');
+    const expiry = new Date(Date.now() + 1000 * 60 * 60); // 1 hora
+
+    await db.query(
+      'UPDATE users SET reset_token = ?, reset_token_expiry = ? WHERE email = ?',
+      [token, expiry, email]
+    );
+
+    await emailService.sendPasswordReset(email, token);
+    res.json({ message: 'Se o email existir, receberás um link em breve.' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro interno do servidor.' });
+  }
+};
+
+const resetPassword = async (req, res) => {
+  try {
+    const { token, password } = req.body;
+    if (!token || !password) return res.status(400).json({ error: 'Token e password são obrigatórios.' });
+
+    const [rows] = await db.query(
+      'SELECT * FROM users WHERE reset_token = ? AND reset_token_expiry > NOW()',
+      [token]
+    );
+    if (!rows.length) return res.status(400).json({ error: 'Link inválido ou expirado.' });
+
+    const hashed = await bcrypt.hash(password, 10);
+    await db.query(
+      'UPDATE users SET password = ?, reset_token = NULL, reset_token_expiry = NULL WHERE reset_token = ?',
+      [hashed, token]
+    );
+
+    res.json({ message: 'Password atualizada com sucesso!' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro interno do servidor.' });
+  }
+};
+
 const checkEmail = async (req, res) => {
   const { email } = req.query;
   if (!email) return res.status(400).json({ error: 'Email é obrigatório.' });
@@ -111,4 +163,4 @@ const checkEmail = async (req, res) => {
   res.json({ exists });
 };
 
-module.exports = { login, register, createClientUser, checkEmail };
+module.exports = { login, register, createClientUser, checkEmail, forgotPassword, resetPassword };
