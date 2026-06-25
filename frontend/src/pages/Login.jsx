@@ -147,6 +147,13 @@ export default function Login() {
                 Esqueceste a password?
               </Link>
             </p>
+            <p style={{ textAlign: 'center', marginTop: '8px', fontSize: '0.88rem', color: '#64748b' }}>
+              Ainda não tens conta?{' '}
+              <Link to="/registar" style={{ color: '#833AB4', fontWeight: 600, textDecoration: 'none' }}>
+                Registar
+              </Link>
+            </p>
+
           </form>
 
         </div>

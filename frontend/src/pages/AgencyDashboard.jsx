@@ -7,7 +7,6 @@ import {
   updateCardStatus, updateCard, createCard, createClient, updateClient,
   deleteCard, deleteClient, deleteComment, createComment, createMetrics, updateMetrics,
   getNotificationsForAgency, markNotificationsRead, markNotificationRead,
-  createClientUser,
 } from '../services/api';
 import AgencyTopnav     from '../components/agency/AgencyTopnav';
 import BoardHeader      from '../components/agency/BoardHeader';
@@ -68,7 +67,7 @@ function AgencyDashboard() {
   // mensagem de erro do formulário de novo cliente
   const [clientError, setClientError] = useState('');
   // dados do formulário de novo cliente
-  const [clientForm, setClientForm] = useState({ company_name: '', contact_email: '', client_name: '', social_networks: '', password: '' });
+  const [clientForm, setClientForm] = useState({ company_name: '', contact_email: '', social_networks: '' });
   // cor selecionada para o novo cliente
   const [clientColor, setClientColor] = useState('#6366f1');
   // true enquanto a mudança de estado do conteúdo está a ser processada
@@ -422,14 +421,10 @@ function AgencyDashboard() {
       return;
     }
     setClientError('');
-    if (newClient.id && clientForm.password) {
-      await createClientUser(clientForm.contact_email, clientForm.password, newClient.id, clientForm.client_name);
-    }
     const data = await getClients();
     setClients(data);
     setShowNewClientModal(false);
-    setClientError('');
-    setClientForm({ company_name: '', contact_email: '', client_name: '', social_networks: '', password: '' });
+    setClientForm({ company_name: '', contact_email: '', client_name: '', social_networks: '' });
     setClientColor('#6366f1');
   };
 
