@@ -28,7 +28,7 @@ function auth(req, res, next) {
     next();
   } catch {
     // token inválido ou expirado
-    return res.sendStatus(403); 
+    return res.status(403).json({ error: 'Token inválido ou expirado.' });
   }
 }
 

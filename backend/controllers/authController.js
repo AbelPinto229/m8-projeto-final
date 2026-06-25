@@ -3,7 +3,6 @@ const bcrypt       = require('bcryptjs');
 const crypto       = require('crypto');
 const authService  = require('../services/authService');
 const emailService = require('../services/emailService');
-const db           = require('../db/connection');
 
 const login = async (req, res) => {
   try {
@@ -58,23 +57,19 @@ const login = async (req, res) => {
 //registo
 const register = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, name } = req.body;
 
     if (!email || !password) {
       return res.status(400).json({ error: 'Email e password são obrigatórios.' });
     }
 
-    // verifica se já existe um utilizador com esse email
     const exists = await authService.emailExists(email);
     if (exists) {
       return res.status(409).json({ error: 'Este email já está registado.' });
     }
 
-    // encripta a password antes de guardar na BD — nunca guarda a password original
     const hashedPassword = await bcrypt.hash(password, 10);
-
-    // cria o utilizador na BD
-    await authService.createUser(email, hashedPassword);
+    await authService.createUser(email, hashedPassword, 'client', null, name || null);
 
     res.status(201).json({ message: 'Conta criada com sucesso!' });
   } catch (err) {
@@ -107,25 +102,27 @@ const createClientUser = async (req, res) => {
   }
 };
 
+const checkEmail = async (req, res) => {
+  const { email } = req.query;
+  if (!email) return res.status(400).json({ error: 'Email é obrigatório.' });
+  const exists = await authService.emailExists(email);
+  res.json({ exists });
+};
+
 const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
     if (!email) return res.status(400).json({ error: 'Email é obrigatório.' });
 
     const user = await authService.findUserByEmail(email);
-    // responde sempre com sucesso para não revelar se o email existe ou não
-    if (!user) return res.json({ message: 'Se o email existir, receberás um link em breve.' });
+    if (!user) return res.json({ message: 'Se o email existir, receberás um código em breve.' });
 
-    const token  = crypto.randomBytes(32).toString('hex');
-    const expiry = new Date(Date.now() + 1000 * 60 * 60); // 1 hora
+    const otp    = crypto.randomInt(100000, 999999).toString();
+    const expiry = new Date(Date.now() + 1000 * 60 * 10); // 10 minutos
 
-    await db.query(
-      'UPDATE users SET reset_token = ?, reset_token_expiry = ? WHERE email = ?',
-      [token, expiry, email]
-    );
-
-    await emailService.sendPasswordReset(email, token);
-    res.json({ message: 'Se o email existir, receberás um link em breve.' });
+    await authService.saveOTP(email, otp, expiry);
+    await emailService.sendOTP(email, otp);
+    res.json({ message: 'Se o email existir, receberás um código em breve.' });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Erro interno do servidor.' });
@@ -134,33 +131,20 @@ const forgotPassword = async (req, res) => {
 
 const resetPassword = async (req, res) => {
   try {
-    const { token, password } = req.body;
-    if (!token || !password) return res.status(400).json({ error: 'Token e password são obrigatórios.' });
+    const { otp, password } = req.body;
+    if (!otp || !password) return res.status(400).json({ error: 'Código e password são obrigatórios.' });
 
-    const [rows] = await db.query(
-      'SELECT * FROM users WHERE reset_token = ? AND reset_token_expiry > NOW()',
-      [token]
-    );
-    if (!rows.length) return res.status(400).json({ error: 'Link inválido ou expirado.' });
+    const user = await authService.findUserByOTP(otp);
+    if (!user) return res.status(400).json({ error: 'Código inválido ou expirado.' });
 
     const hashed = await bcrypt.hash(password, 10);
-    await db.query(
-      'UPDATE users SET password = ?, reset_token = NULL, reset_token_expiry = NULL WHERE reset_token = ?',
-      [hashed, token]
-    );
+    await authService.updatePasswordAndClearOTP(otp, hashed);
 
     res.json({ message: 'Password atualizada com sucesso!' });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Erro interno do servidor.' });
   }
-};
-
-const checkEmail = async (req, res) => {
-  const { email } = req.query;
-  if (!email) return res.status(400).json({ error: 'Email é obrigatório.' });
-  const exists = await authService.emailExists(email);
-  res.json({ exists });
 };
 
 module.exports = { login, register, createClientUser, checkEmail, forgotPassword, resetPassword };

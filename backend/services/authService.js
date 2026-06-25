@@ -27,4 +27,26 @@ const emailExists = async (email) => {
   return results.length > 0;
 };
 
-module.exports = { findUserByEmail, validatePassword, createUser, emailExists };
+const saveOTP = async (email, otp, expiry) => {
+  await db.query(
+    'UPDATE users SET otp = ?, otp_expiry = ? WHERE email = ?',
+    [otp, expiry, email]
+  );
+};
+
+const findUserByOTP = async (otp) => {
+  const [rows] = await db.query(
+    'SELECT * FROM users WHERE otp = ? AND otp_expiry > NOW()',
+    [otp]
+  );
+  return rows[0] || null;
+};
+
+const updatePasswordAndClearOTP = async (otp, hashedPassword) => {
+  await db.query(
+    'UPDATE users SET password = ?, otp = NULL, otp_expiry = NULL WHERE otp = ?',
+    [hashedPassword, otp]
+  );
+};
+
+module.exports = { findUserByEmail, validatePassword, createUser, emailExists, saveOTP, findUserByOTP, updatePasswordAndClearOTP };
