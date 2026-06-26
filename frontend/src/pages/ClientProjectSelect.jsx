@@ -54,6 +54,7 @@ export default function ClientProjectSelect() {
   return (
     <div className="agency-full-layout">
       <ClientNavbar
+        onBrandClick={() => navigate('/')}
         notifications={notifications}
         onNotifClick={(n) => {
           markNotificationRead(n.id);
