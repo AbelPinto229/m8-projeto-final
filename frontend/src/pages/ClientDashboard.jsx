@@ -17,6 +17,7 @@ function ClientDashboard() {
 
   // dados do cliente carregados da api
   const [client, setClient] = useState(null);
+  const [notFound, setNotFound] = useState(false);
   // conteúdos do cliente separados nas 3 colunas do kanban
   const [cards, setCards] = useState([]);
   // conteúdo aberto no modal
@@ -35,28 +36,28 @@ function ClientDashboard() {
   // ids de todos os projetos do cliente — começa vazio, só faz polling depois de carregar
   const [allProjectIds, setAllProjectIds] = useState([]);
 
-  // verifica se o token é válido — redireciona para login se não for
+  // redireciona para login se não houver token
   useEffect(() => {
     const token = localStorage.getItem("token");
-    fetch("http://localhost:5000/api/auth/dashboard", {
-      headers: { Authorization: `Bearer ${token}` }
-    }).then(res => {
-      if (!res.ok) navigate("/login");
-    });
+    if (!token) navigate('/login', { replace: true });
   }, []);
 
   // carrega cliente, conteúdos e notificações de todos os projetos ao montar
   useEffect(() => {
-    getClientById(clientId).then(setClient);
-    getCardsByClient(clientId).then(setCards);
+    getClientById(clientId)
+      .then((data) => { if (!data) setNotFound(true); else setClient(data); })
+      .catch(() => setNotFound(true));
+    getCardsByClient(clientId)
+      .then((data) => setCards(Array.isArray(data) ? data : []))
+      .catch(() => setCards([]));
     getMyClients().then((data) => {
       if (!Array.isArray(data)) return;
       const ids = data.map((p) => p.id);
       setAllProjectIds(ids);
-      // busca notificações imediatamente sem esperar pelo intervalo
       Promise.all(ids.map((id) => getNotificationsForClient(id)))
-        .then((results) => setNotifications(results.flat()));
-    });
+        .then((results) => setNotifications(results.flat()))
+        .catch(() => {});
+    }).catch(() => {});
   }, [clientId]);
 
   // polling de cards e notificações (de todos os projetos) a cada 2s
@@ -154,6 +155,12 @@ function ClientDashboard() {
     : null;
 
   // mostra estado de carregamento enquanto os dados do cliente chegam
+  if (notFound) return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', gap: '12px' }}>
+      <p style={{ fontSize: '1.1rem', color: '#0f172a', fontWeight: 600 }}>Projeto não encontrado.</p>
+      <button onClick={() => navigate('/meus-projetos')} style={{ background: 'none', border: 'none', color: '#833AB4', fontWeight: 600, cursor: 'pointer', fontSize: '0.95rem' }}>← Voltar aos projetos</button>
+    </div>
+  );
   if (!client) return <div className="agency-dashboard" style={{ padding: '2rem', color: '#94a3b8' }}>A carregar...</div>;
 
   return (

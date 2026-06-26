@@ -9,6 +9,14 @@ const getByClient = async (req, res) => {
     const { client_id } = req.query;
     if (!client_id) return res.status(400).json({ error: 'Dados em falta ou inválidos' });
 
+    // clientes só podem ver os cards dos seus próprios projetos
+    if (req.user.role === 'client') {
+      const client = await require('../services/clientService').getById(client_id);
+      if (!client || client.contact_email !== req.user.email) {
+        return res.status(403).json({ error: 'Acesso negado.' });
+      }
+    }
+
     const cards = await cardService.getByClient(client_id);
     res.json(cards);
   } catch (err) {

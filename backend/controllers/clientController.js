@@ -17,6 +17,12 @@ const getById = async (req, res) => {
   try {
     const client = await clientService.getById(req.params.id);
     if (!client) return res.status(404).json({ error: 'Cliente não encontrado' });
+
+    // clientes só podem aceder aos seus próprios projetos
+    if (req.user.role === 'client' && client.contact_email !== req.user.email) {
+      return res.status(403).json({ error: 'Acesso negado.' });
+    }
+
     res.json(client);
   } catch (err) {
     console.error(err);
