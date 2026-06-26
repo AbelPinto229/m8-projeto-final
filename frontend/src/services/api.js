@@ -324,6 +324,16 @@ export const checkEmail = async (email) => {
   return response.json();
 };
 
+// registo (rota pública)
+export const submitRegister = async (body) => {
+  const response = await fetch(`${BASE_URL}/auth/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  return response.json();
+};
+
 // contacto (rota pública)
 export const submitContact = async (body) => {
   const response = await fetch(`${BASE_URL}/contacts`, {
