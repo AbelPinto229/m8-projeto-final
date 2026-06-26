@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { submitRegister } from '../services/api';
+import { BASE_URL } from '../services/api';
 import '../styles/auth.css';
 
 export default function Register() {
@@ -23,8 +23,13 @@ export default function Register() {
     setAlert(null);
     setLoading(true);
     try {
-      const data = await submitRegister({ name, email, password });
-      if (data?.error) {
+      const res  = await fetch(`${BASE_URL}/auth/register`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
         setAlert({ type: 'error', msg: data.error });
       } else {
         setAlert({ type: 'success', msg: 'Conta criada! Redirecionar para o login...' });

@@ -1,4 +1,4 @@
-const BASE_URL = "https://m8-projeto-final-production.up.railway.app/api";
+export const BASE_URL = "https://m8-projeto-final-production.up.railway.app/api";
 
 // clientes
 export const getClients = async () => {
@@ -320,16 +320,6 @@ export const checkEmail = async (email) => {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`
     }
-  });
-  return response.json();
-};
-
-// registo (rota pública)
-export const submitRegister = async (body) => {
-  const response = await fetch(`${BASE_URL}/auth/register`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
   });
   return response.json();
 };

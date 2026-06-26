@@ -93,15 +93,6 @@ function AgencyDashboard() {
   // notificações da agência para o cliente selecionado
   const [notifications, setNotifications] = useState([]);
 
-  // verifica se o token é válido — redireciona para login se não for
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const response = fetch("http://localhost:5000/api/auth/dashboard", {
-      headers: { Authorization: `Bearer ${token}` }
-    }).then(res => {
-      if (!res.ok) navigate("/login");
-    });
-  }, []);
 
   // carrega clientes e notificações em paralelo ao montar
   useEffect(() => {

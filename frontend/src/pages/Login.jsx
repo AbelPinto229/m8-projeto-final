@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
+import { BASE_URL } from '../services/api';
 import '../styles/auth.css';
 
 export default function Login() {
@@ -33,16 +34,13 @@ export default function Login() {
 
     try {
       // envia email e password no body para o backend — POST /api/auth/login
-      const res = await fetch('http://localhost:5000/api/auth/login', {
+      const res = await fetch(`${BASE_URL}/auth/login`, {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
-
-      // recebe o que o backend respondeu: { token, message, user }
       const data = await res.json();
 
-      // se o backend devolveu erro (401 credenciais inválidas, 400 campos em falta)
       if (!res.ok) {
         setAlert({ type: 'error', msg: data.error || data.message || 'Erro ao entrar.' });
         setLoading(false);

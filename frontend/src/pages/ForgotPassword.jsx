@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { BASE_URL } from '../services/api';
 import '../styles/auth.css';
 
 export default function ForgotPassword() {
@@ -19,7 +20,7 @@ export default function ForgotPassword() {
     setAlert(null);
     setLoading(true);
     try {
-      const res  = await fetch('http://localhost:5000/api/auth/forgot-password', {
+      const res  = await fetch(`${BASE_URL}/auth/forgot-password`, {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
@@ -47,7 +48,7 @@ export default function ForgotPassword() {
     setAlert(null);
     setLoading(true);
     try {
-      const res  = await fetch('http://localhost:5000/api/auth/reset-password', {
+      const res  = await fetch(`${BASE_URL}/auth/reset-password`, {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ otp, password }),
