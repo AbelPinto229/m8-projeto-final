@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:5000/api";
+const BASE_URL = "https://m8-projeto-final-production.up.railway.app/api";
 
 // clientes
 export const getClients = async () => {
