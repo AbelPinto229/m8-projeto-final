@@ -2,13 +2,10 @@
 export default function CreateCardModal({
   createForm,
   setCreateForm,
-  imagePreviews,
   createLoading,
   createdCard,
   handleCloseCreate,
   handleCreateSubmit,
-  handleImageChange,
-  handleRemoveImage,
 }) {
   return (
     <div className="modal-overlay" onClick={handleCloseCreate}>
@@ -70,24 +67,14 @@ export default function CreateCardModal({
                 />
               </div>
               <div className="form-group">
-                <label>Imagens</label>
-                {/* permite selecionar múltiplas imagens */}
-                <label className="image-upload-area">
-                  <input type="file" accept="image/*" multiple onChange={handleImageChange} />
-                  <p>📎 Clica para adicionar imagens</p>
-                  <span>PNG, JPG, WEBP</span>
-                </label>
-                {/* miniaturas das imagens selecionadas com botão de remover cada uma */}
-                {imagePreviews.length > 0 && (
-                  <div className="image-previews">
-                    {imagePreviews.map((src, i) => (
-                      <div key={i} className="image-preview">
-                        <img src={src} alt="" />
-                        <button className="image-preview__remove" onClick={() => handleRemoveImage(i)}>✕</button>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                <label>URL da imagem</label>
+                {/* colar o link do canva ou de outra fonte — vai direto para a bd */}
+                <input
+                  type="url"
+                  placeholder="https://... (link do Canva ou outra fonte)"
+                  value={createForm.image_url}
+                  onChange={(e) => setCreateForm({ ...createForm, image_url: e.target.value })}
+                />
               </div>
               {/* desativado enquanto a ia está a processar */}
               <button type="submit" className="btn-new" disabled={createLoading}>
@@ -101,8 +88,8 @@ export default function CreateCardModal({
               <p className="card-preview__label">Preview do card</p>
               {/* o preview atualiza em tempo real conforme o utilizador preenche o formulário */}
               <div className="card-preview__box">
-                {imagePreviews.length > 0
-                  ? <img src={imagePreviews[0]} alt="preview" className="card-preview__image" />
+                {createForm.image_url
+                  ? <img src={createForm.image_url} alt="preview" className="card-preview__image" />
                   : <div className="card-preview__image-placeholder">📷 Sem imagem</div>
                 }
                 <div className="card-preview__body">

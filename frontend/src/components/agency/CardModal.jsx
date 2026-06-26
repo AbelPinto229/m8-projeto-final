@@ -9,7 +9,6 @@ export default function CardModal({
   setEditMode,
   editForm,
   setEditForm,
-  editImagePreviews,
   metricsForm,
   setMetricsForm,
   aiSuggestion,
@@ -21,7 +20,6 @@ export default function CardModal({
   handleStatusChange,
   handleEditOpen,
   handleEditSave,
-  handleEditImageChange,
   handleDeleteComment,
   handleMetricsSubmit,
   handleDeleteCard,
@@ -181,12 +179,14 @@ export default function CardModal({
                   />
                 </div>
                 <div className="form-group">
-                  <label>Imagem</label>
-                  <label className="image-upload-area">
-                    <input type="file" accept="image/*" onChange={handleEditImageChange} />
-                    <p>📎 Clica para alterar a imagem</p>
-                    <span>PNG, JPG, WEBP</span>
-                  </label>
+                  <label>URL da imagem</label>
+                  {/* colar o link do canva ou de outra fonte para atualizar a imagem */}
+                  <input
+                    type="url"
+                    placeholder="https://... (link do Canva ou outra fonte)"
+                    value={editForm.image_url || ''}
+                    onChange={(e) => setEditForm({ ...editForm, image_url: e.target.value })}
+                  />
                 </div>
                 <div className="modal__actions">
                   <button onClick={handleEditSave}>Guardar</button>
@@ -198,8 +198,8 @@ export default function CardModal({
                 <div className="card-preview">
                   <p className="card-preview__label">Preview do card</p>
                   <div className="card-preview__box">
-                    {editImagePreviews.length > 0
-                      ? <img src={editImagePreviews[0]} alt="preview" className="card-preview__image" />
+                    {editForm.image_url
+                      ? <img src={editForm.image_url} alt="preview" className="card-preview__image" />
                       : <div className="card-preview__image-placeholder">📷 Sem imagem</div>
                     }
                     <div className="card-preview__body">

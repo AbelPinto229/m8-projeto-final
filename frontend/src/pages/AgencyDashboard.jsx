@@ -48,12 +48,10 @@ function AgencyDashboard() {
   const [activeTab, setActiveTab] = useState('details');
   // controla visibilidade do modal de criação de conteúdo
   const [showCreateModal, setShowCreateModal] = useState(false);
-  // dados do formulário de criação de conteúdo
-  const [createForm, setCreateForm] = useState({ title: '', body: '', social_network: 'instagram', scheduled_date: '', review_deadline: '' });
+  // dados do formulário de criação — image_url é colado manualmente (ex: link do canva)
+  const [createForm, setCreateForm] = useState({ title: '', body: '', social_network: 'instagram', scheduled_date: '', review_deadline: '', image_url: '' });
   // dados do formulário de métricas reais
   const [metricsForm, setMetricsForm] = useState({ reach: '', likes: '', comments_count: '', shares: '', published_at: '' });
-  // urls de preview das imagens selecionadas no formulário de criação
-  const [imagePreviews, setImagePreviews] = useState([]);
   // true enquanto a api está a criar o conteúdo e a ia a processar
   const [createLoading, setCreateLoading] = useState(false);
   // resultado da criação com a sugestão da ia incluída
@@ -76,10 +74,8 @@ function AgencyDashboard() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   // true quando o modal de detalhe está em modo de edição
   const [editMode, setEditMode] = useState(false);
-  // dados do formulário de edição de conteúdo
+  // dados do formulário de edição — image_url incluído para poder ser alterado
   const [editForm, setEditForm] = useState({});
-  // urls de preview da imagem de edição
-  const [editImagePreviews, setEditImagePreviews] = useState([]);
   // cliente aberto no drawer de edição (null = drawer fechado)
   const [editClientModal, setEditClientModal] = useState(null);
   // dados do formulário de edição de cliente
@@ -264,6 +260,7 @@ function AgencyDashboard() {
       // remove a parte de tempo da data para o input type="date"
       scheduled_date: card.scheduled_date ? card.scheduled_date.split('T')[0] : '',
       review_deadline: card.review_deadline ? card.review_deadline.split('T')[0] : '',
+      image_url: card.image_url || '',
     });
     const commentsData = await getCommentsByCard(card.id);
     setComments(commentsData);
@@ -294,27 +291,15 @@ function AgencyDashboard() {
   // abre o modal de criação limpo
   const handleOpenCreate = () => {
     setCreatedCard(null);
-    setCreateForm({ title: '', body: '', social_network: 'instagram', scheduled_date: '', review_deadline: '' });
-    setImagePreviews([]);
+    setCreateForm({ title: '', body: '', social_network: 'instagram', scheduled_date: '', review_deadline: '', image_url: '' });
     setShowCreateModal(true);
-  };
-
-  // adiciona as imagens selecionadas às existentes
-  const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
-    const previews = files.map((f) => URL.createObjectURL(f));
-    setImagePreviews((prev) => [...prev, ...previews]);
-  };
-
-  // remove uma imagem da lista de previews pelo índice
-  const handleRemoveImage = (index) => {
-    setImagePreviews((prev) => prev.filter((_, i) => i !== index));
   };
 
   // cria o conteúdo na api e recebe o resultado com a sugestão da ia
   const handleCreateSubmit = async (e) => {
     e.preventDefault();
     setCreateLoading(true);
+    // image_url vem diretamente do formulário (link colado do canva ou outra fonte)
     const result = await createCard({ ...createForm, client_id: selectedClient.id });
     setCreatedCard(result);
     setCreateLoading(false);
@@ -363,8 +348,9 @@ function AgencyDashboard() {
       social_network: selectedCard.social_network,
       scheduled_date: selectedCard.scheduled_date?.split('T')[0] || '',
       review_deadline: selectedCard.review_deadline?.split('T')[0] || '',
+      // pré-preenche a url da imagem existente para a agência poder alterar ou manter
+      image_url: selectedCard.image_url || '',
     });
-    setEditImagePreviews(selectedCard.image_url ? [selectedCard.image_url] : []);
     setEditMode(true);
   };
 
@@ -376,13 +362,6 @@ function AgencyDashboard() {
     setEditForm({ ...editForm, body: newBody });
     setEditMode(true);
     setActiveTab('details');
-  };
-
-  // atualiza o preview da imagem de edição
-  const handleEditImageChange = (e) => {
-    const files = Array.from(e.target.files);
-    const previews = files.map((f) => URL.createObjectURL(f));
-    setEditImagePreviews(previews);
   };
 
   // guarda as alterações do conteúdo na api e fecha o modal
@@ -503,7 +482,6 @@ function AgencyDashboard() {
             setEditMode={setEditMode}
             editForm={editForm}
             setEditForm={setEditForm}
-            editImagePreviews={editImagePreviews}
             metricsForm={metricsForm}
             setMetricsForm={setMetricsForm}
             aiSuggestion={aiSuggestion}
@@ -515,7 +493,6 @@ function AgencyDashboard() {
             handleStatusChange={handleStatusChange}
             handleEditOpen={handleEditOpen}
             handleEditSave={handleEditSave}
-            handleEditImageChange={handleEditImageChange}
             handleDeleteComment={handleDeleteComment}
             handleMetricsSubmit={handleMetricsSubmit}
             handleDeleteCard={handleDeleteCard}
@@ -531,13 +508,10 @@ function AgencyDashboard() {
           <CreateCardModal
             createForm={createForm}
             setCreateForm={setCreateForm}
-            imagePreviews={imagePreviews}
             createLoading={createLoading}
             createdCard={createdCard}
             handleCloseCreate={handleCloseCreate}
             handleCreateSubmit={handleCreateSubmit}
-            handleImageChange={handleImageChange}
-            handleRemoveImage={handleRemoveImage}
           />
         )}
       </div>
