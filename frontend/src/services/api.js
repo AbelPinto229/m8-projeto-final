@@ -22,9 +22,8 @@ export const getClientById = async (id) => {
       Authorization: `Bearer ${token}`
     }
   });
-  const data = await response.json();
-  console.log(data);
-  return data;
+  if (!response.ok) return null;
+  return await response.json();
 };
 
 export const createClient = async (body) => {
@@ -50,9 +49,8 @@ export const getMyClients = async () => {
       Authorization: `Bearer ${token}`
     }
   });
-  const data = await response.json();
-  console.log(data);
-  return data;
+  if (!response.ok) return null;
+  return await response.json();
 };
 
 export const createClientUser = async (email, password, client_id, name) => {
@@ -108,6 +106,7 @@ export const getCardsByClient = async (client_id) => {
       Authorization: `Bearer ${token}`
     }
   });
+  if (!response.ok) return [];
   const data = await response.json();
   console.log(data);
   return data;

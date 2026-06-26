@@ -22,12 +22,8 @@ export default function ClientProjectSelect() {
 
     const load = () => {
       getMyClients().then((data) => {
-        if (!Array.isArray(data)) return;
+        if (!Array.isArray(data)) { navigate('/login', { replace: true }); return; }
         const active = data.filter((p) => p.status !== 'inativo');
-        if (active.length === 1) {
-          navigate(`/cliente/${active[0].id}`, { replace: true });
-          return;
-        }
         setProjects(active);
         setProjectIds(active.map((p) => p.id));
         setLoading(false);
