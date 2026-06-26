@@ -122,6 +122,15 @@ function AgencyDashboard() {
     return () => clearInterval(interval);
   }, [id]);
 
+  // polling de comentários quando o modal está aberto — apanha mensagens novas do cliente em tempo real
+  useEffect(() => {
+    if (!selectedCard) return;
+    const interval = setInterval(() => {
+      getCommentsByCard(selectedCard.id).then(setComments);
+    }, 2000);
+    return () => clearInterval(interval);
+  }, [selectedCard?.id]);
+
   // polling de notificações de TODOS os clientes — sempre ativo independente de onde está
   useEffect(() => {
     if (clients.length === 0) return;

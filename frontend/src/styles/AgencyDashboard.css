@@ -1486,6 +1486,7 @@
   }
   .modal {
     padding: 20px;
+    padding-top: 52px;
     border-radius: 12px;
     max-height: none;
     margin: 0 auto;
