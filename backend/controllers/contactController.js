@@ -1,12 +1,6 @@
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const create = async (req, res) => {
   try {
@@ -16,9 +10,9 @@ const create = async (req, res) => {
       return res.status(400).json({ error: 'Nome, email válido e mensagem são obrigatórios.' });
     }
 
-    await transporter.sendMail({
-      from: `"OffScroll Website" <${process.env.EMAIL_USER}>`,
-      to: process.env.EMAIL_USER,
+    await resend.emails.send({
+      from: 'OffScroll Website <onboarding@resend.dev>',
+      to: [process.env.EMAIL_TO || 'offscrollteste@gmail.com'],
       replyTo: email,
       subject: `Novo contacto de ${nome}${servico ? ` — ${servico}` : ''}`,
       text: `Nome: ${nome}\nEmail: ${email}\nServiço: ${servico || '—'}\n\n${mensagem}`,

@@ -1,17 +1,11 @@
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const sendOTP = async (to, otp) => {
-  await transporter.sendMail({
-    from: `"OffScroll" <${process.env.EMAIL_USER}>`,
-    to,
+  await resend.emails.send({
+    from: 'OffScroll <onboarding@resend.dev>',
+    to: [to],
     subject: 'Recuperar password — OffScroll',
     html: `
       <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px">
