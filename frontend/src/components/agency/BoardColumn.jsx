@@ -22,6 +22,9 @@ export default function BoardColumn({ col, handleCardClick }) {
       <div className="board__droppable">
         {col.items.map((card) => (
           <div key={card.id} className="board__card" onClick={() => handleCardClick(card)}>
+            {card.image_url && (
+              <img src={card.image_url} alt={card.title} className="board__card__image" />
+            )}
             <h3>{card.title}</h3>
             {/* data de publicação planeada — todas as colunas */}
             {card.scheduled_date && (

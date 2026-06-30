@@ -23,6 +23,9 @@ export default function ClientBoardColumn({ col, handleCardClick }) {
         ? <p className="client-column__empty">Sem conteúdos</p>
         : col.items.map((card) => (
             <div key={card.id} className="board-card" onClick={() => handleCardClick(card)}>
+              {card.image_url && (
+                <img src={card.image_url} alt={card.title} className="board__card__image" />
+              )}
               <p className="board-card__title">{card.title}</p>
               {/* data de publicação planeada — todas as colunas */}
               {card.scheduled_date && (
