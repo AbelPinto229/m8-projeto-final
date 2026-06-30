@@ -121,13 +121,8 @@ const forgotPassword = async (req, res) => {
     const expiry = new Date(Date.now() + 1000 * 60 * 10); // 10 minutos
 
     await authService.saveOTP(email, otp, expiry);
-
-    // responde imediatamente — o email é enviado em segundo plano
+    await emailService.sendOTP(email, otp);
     res.json({ message: 'Se o email existir, receberás um código em breve.' });
-
-    emailService.sendOTP(email, otp).catch(err =>
-      console.error('Erro ao enviar OTP:', err)
-    );
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Erro interno do servidor.' });
