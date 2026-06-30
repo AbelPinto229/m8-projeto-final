@@ -1,4 +1,4 @@
-export const BASE_URL = "https://m8-projeto-final-production.up.railway.app/api";
+export const BASE_URL = import.meta.env.VITE_API_URL ?? "https://m8-projeto-final-production.up.railway.app/api";
 
 // clientes
 export const getClients = async () => {
