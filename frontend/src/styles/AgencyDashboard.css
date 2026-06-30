@@ -580,7 +580,7 @@
 .board__card {
   background: #f8fafc;
   border-radius: 10px;
-  padding: 14px;
+  padding: 0;
   overflow: hidden;
   margin-bottom: 10px;
   cursor: pointer;
@@ -589,12 +589,14 @@
 }
 
 .board__card__image {
-  width: calc(100% + 28px);
+  width: 100%;
   height: 130px;
   object-fit: cover;
   display: block;
-  margin: -14px -14px 10px -14px;
-  border-radius: 10px 10px 0 0;
+}
+
+.board__card__content {
+  padding: 14px;
 }
 
 .board__card:hover {

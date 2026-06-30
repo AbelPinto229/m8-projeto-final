@@ -25,29 +25,29 @@ export default function BoardColumn({ col, handleCardClick }) {
             {card.image_url && (
               <img src={card.image_url} alt={card.title} className="board__card__image" />
             )}
-            <h3>{card.title}</h3>
-            {/* data de publicação planeada — todas as colunas */}
-            {card.scheduled_date && (
-              <p style={{ margin: '4px 0 2px', fontSize: '11px', color: '#6366f1' }}>
-                📅 Publicação: {formatDate(card.scheduled_date)}
-              </p>
-            )}
-            {/* linha com tag + info contextual + comentários, tudo no mesmo nível */}
-            <div className="board__card__row">
-              <span className="board__card__tag">{card.social_network}</span>
-              <div className="board__card__row-right">
-                {col.id === 'in_review' && card.review_deadline && (
-                  <span className="board__card__deadline">⏱ Data Limite: {formatDate(card.review_deadline)}</span>
-                )}
-                {col.id === 'approved' && card.approved_at && (
-                  <span className="board__card__approved">✓ {formatDateTime(card.approved_at)}</span>
-                )}
-                {col.id === 'published' && card.published_at && (
-                  <span className="board__card__published">📅 {formatDate(card.published_at)}</span>
-                )}
-                {card.comment_count > 0 && (
-                  <span className="board__card__comments">💬 {card.comment_count}</span>
-                )}
+            <div className="board__card__content">
+              <h3>{card.title}</h3>
+              {card.scheduled_date && (
+                <p style={{ margin: '4px 0 2px', fontSize: '11px', color: '#6366f1' }}>
+                  📅 Publicação: {formatDate(card.scheduled_date)}
+                </p>
+              )}
+              <div className="board__card__row">
+                <span className="board__card__tag">{card.social_network}</span>
+                <div className="board__card__row-right">
+                  {col.id === 'in_review' && card.review_deadline && (
+                    <span className="board__card__deadline">⏱ Data Limite: {formatDate(card.review_deadline)}</span>
+                  )}
+                  {col.id === 'approved' && card.approved_at && (
+                    <span className="board__card__approved">✓ {formatDateTime(card.approved_at)}</span>
+                  )}
+                  {col.id === 'published' && card.published_at && (
+                    <span className="board__card__published">📅 {formatDate(card.published_at)}</span>
+                  )}
+                  {card.comment_count > 0 && (
+                    <span className="board__card__comments">💬 {card.comment_count}</span>
+                  )}
+                </div>
               </div>
             </div>
           </div>
