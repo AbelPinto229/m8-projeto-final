@@ -19,11 +19,17 @@ export default function QuemSomos() {
             </div>
           </div>
         </div>
-        {/* placeholder da foto da equipa */}
-        <div className="qs-img r">
-          <div className="img-ph team-photo"></div>
-          <p className="qs-caption">A equipa OffScroll — movidos pela criatividade.</p>
+        <div className="qs-team r">
+          <div className="qs-member">
+            <img src="/carina.jpg" alt="Carina Pinto" className="qs-member__photo" />
+            <p className="qs-member__name">● Carina Pinto</p>
+          </div>
+          <div className="qs-member">
+            <img src="/miguel.jpg" alt="Miguel Silvestre" className="qs-member__photo" />
+            <p className="qs-member__name">● Miguel Silvestre</p>
+          </div>
         </div>
+        <p className="qs-caption r">A equipa Off Scroll — movidos pela criatividade.</p>
       </div>
     </section>
   );

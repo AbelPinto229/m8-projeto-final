@@ -449,6 +449,35 @@ em { font-style: normal; color: var(--blue); }
 }
 
 .qs-img { margin-top: 0; }
+
+.qs-team {
+  display: flex;
+  justify-content: center;
+  gap: 80px;
+  margin-top: 48px;
+  margin-bottom: 24px;
+}
+.qs-member {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+.qs-member__photo {
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center top;
+  background: #f0f0f5;
+}
+.qs-member__name {
+  font-family: var(--font-b);
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--text-1);
+  letter-spacing: .05em;
+}
 .img-ph {
   width: 100%;
   aspect-ratio: 16/7;
