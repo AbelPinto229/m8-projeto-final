@@ -464,8 +464,8 @@ em { font-style: normal; color: var(--blue); }
   gap: 16px;
 }
 .qs-member__photo {
-  width: 280px;
-  height: 280px;
+  width: 400px;
+  height: 400px;
   border-radius: 50%;
   object-fit: cover;
   object-position: center top;
