@@ -21,12 +21,16 @@ export default function QuemSomos() {
         </div>
         <div className="qs-team r">
           <div className="qs-member">
-            <img src="/carina.jpg" alt="Carina Pinto" className="qs-member__photo" />
-            <p className="qs-member__name">● Carina Pinto</p>
+            <div className="qs-member__ring">
+              <img src="/carina.jpg" alt="Carina Pinto" className="qs-member__photo" />
+            </div>
+            <p className="qs-member__name">Carina Pinto</p>
           </div>
           <div className="qs-member">
-            <img src="/miguel.jpg" alt="Miguel Silvestre" className="qs-member__photo" />
-            <p className="qs-member__name">● Miguel Silvestre</p>
+            <div className="qs-member__ring">
+              <img src="/miguel.jpg" alt="Miguel Silvestre" className="qs-member__photo" />
+            </div>
+            <p className="qs-member__name">Miguel Silvestre</p>
           </div>
         </div>
         <p className="qs-caption r">A equipa Off Scroll — movidos pela criatividade.</p>
