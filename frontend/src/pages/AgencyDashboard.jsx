@@ -56,6 +56,8 @@ function AgencyDashboard() {
   const [createLoading, setCreateLoading] = useState(false);
   // resultado da criação com a sugestão da ia incluída
   const [createdCard, setCreatedCard] = useState(null);
+  // controla o modal de sucesso após criar conteúdo
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   // texto de pesquisa da lista de clientes
   const [search, setSearch] = useState('');
   // filtro de estado: 'todos' | 'ativo' | 'inativo'
@@ -315,12 +317,14 @@ function AgencyDashboard() {
     const data = await getCardsByClient(selectedClient.id);
     setCards(data);
     getClients().then(setClients);
+    setShowSuccessModal(true);
   };
 
   // fecha o modal de criação e limpa o resultado da ia
   const handleCloseCreate = () => {
     setShowCreateModal(false);
     setCreatedCard(null);
+    setShowSuccessModal(false);
   };
 
   // elimina o conteúdo, recarrega o kanban e fecha o modal
@@ -513,7 +517,7 @@ function AgencyDashboard() {
           />
         )}
         {/* modal de criação de conteúdo — só renderiza quando está aberto */}
-        {showCreateModal && (
+        {showCreateModal && !showSuccessModal && (
           <CreateCardModal
             createForm={createForm}
             setCreateForm={setCreateForm}
@@ -522,6 +526,21 @@ function AgencyDashboard() {
             handleCloseCreate={handleCloseCreate}
             handleCreateSubmit={handleCreateSubmit}
           />
+        )}
+        {/* modal de sucesso após criação de conteúdo */}
+        {showSuccessModal && (
+          <div className="modal-overlay">
+            <div className="modal modal--confirm" style={{ textAlign: 'center', maxWidth: 420 }}>
+              <div style={{ fontSize: 48, marginBottom: 16 }}>✅</div>
+              <h2 className="modal__title" style={{ marginBottom: 8 }}>Conteúdo criado!</h2>
+              <p style={{ color: '#64748b', fontSize: 14, marginBottom: 28 }}>
+                O conteúdo foi guardado e analisado pela IA com sucesso.
+              </p>
+              <button className="btn-new" style={{ width: '100%' }} onClick={handleCloseCreate}>
+                OK
+              </button>
+            </div>
+          </div>
         )}
       </div>
     );
