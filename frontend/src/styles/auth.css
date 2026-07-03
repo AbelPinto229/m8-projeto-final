@@ -79,25 +79,6 @@ body {
   line-height: 1.8;
   margin-bottom: 2rem;
 }
-.brand-perks {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: .65rem;
-}
-.brand-perks li {
-  font-size: .85rem;
-  color: rgba(255,255,255,.4);
-  letter-spacing: .02em;
-  padding-left: .9rem;
-  position: relative;
-}
-.brand-perks li::before {
-  content: '→';
-  position: absolute;
-  left: 0;
-  color: var(--blue-lt);
-}
 
 .brand-footer {
   display: flex;
@@ -225,7 +206,6 @@ form { display: flex; flex-direction: column; gap: 1.1rem; }
   box-shadow: 0 0 0 4px rgba(239,68,68,.08);
 }
 
-.field-error { font-size: .75rem; color: var(--red-err); min-height: 1rem; }
 
 .input-wrap { position: relative; }
 .input-wrap input { padding-right: 2.8rem; }
@@ -239,10 +219,6 @@ form { display: flex; flex-direction: column; gap: 1.1rem; }
 }
 .toggle-pw:hover { color: var(--blue); }
 
-.pw-strength { display: flex; align-items: center; gap: .75rem; margin-top: .3rem; }
-.pw-bar { flex: 1; height: 3px; background: var(--border); border-radius: 999px; overflow: hidden; }
-.pw-bar span { display: block; height: 100%; border-radius: 999px; width: 0; transition: width .4s, background .4s; }
-#pwLabel { font-size: .68rem; font-weight: 800; letter-spacing: .06em; min-width: 70px; text-align: right; }
 
 /* ░░ ALERT BOX ░░ */
 .alert-box { display: none; padding: .85rem 1rem; border-radius: var(--r); font-size: .85rem; font-weight: 600; }
@@ -288,122 +264,6 @@ form { display: flex; flex-direction: column; gap: 1.1rem; }
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-.auth-switch {
-  margin-top: 1.5rem;
-  text-align: center;
-  font-size: .85rem;
-  color: var(--grey);
-}
-.auth-switch a { color: var(--blue); font-weight: 600; text-decoration: none; }
-.auth-switch a:hover { text-decoration: underline; }
-
-/* ░░ DASHBOARD BASE ░░ */
-.dash-body {
-  background: var(--bg);
-  min-height: 100vh;
-  display: flex;
-}
-
-/* keep legacy .dash-nav for Kanban (has its own nav) */
-.dash-nav {
-  position: sticky; top: 0;
-  background: var(--navy);
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 2.5rem;
-  height: 60px;
-  z-index: 100;
-  border-bottom: 3px solid var(--blue);
-}
-.dash-nav-right { display: flex; align-items: center; gap: 1.5rem; }
-
-.brand-logo-nav {
-  font-family: 'Outfit', sans-serif;
-  font-size: 1.2rem;
-  font-weight: 800;
-  text-decoration: none;
-  letter-spacing: -.03em;
-  text-transform: uppercase;
-}
-
-.user-greeting { font-size: .85rem; color: rgba(255,255,255,.4); }
-.user-greeting strong { color: #fff; font-weight: 700; }
-
-.btn-logout {
-  background: none;
-  border: 1.5px solid rgba(255,255,255,.15);
-  color: rgba(255,255,255,.5);
-  padding: .4rem 1rem;
-  border-radius: var(--r);
-  font-family: 'Outfit', sans-serif;
-  font-size: .75rem;
-  font-weight: 700;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: color .2s, border-color .2s, background .2s;
-}
-.btn-logout:hover { color: #fff; border-color: var(--blue-lt); background: rgba(193,53,132,.15); }
-
-.dash-main { padding: 2.5rem 2.5rem 5rem; }
-
-.dash-welcome { margin-bottom: 3.5rem; }
-.dash-welcome h1 {
-  font-family: 'Outfit', sans-serif;
-  font-size: clamp(2rem, 4vw, 3.2rem);
-  font-weight: 800;
-  color: var(--black);
-  margin-bottom: 1rem;
-  line-height: 1.05;
-  letter-spacing: -.03em;
-  text-transform: uppercase;
-}
-.dash-welcome h1 em { font-style: normal; color: var(--blue); }
-.dash-welcome p { font-size: .95rem; color: var(--grey); line-height: 1.75; }
-.dash-welcome strong { color: var(--black); font-weight: 700; }
-
-/* ░░ NAV CARDS ░░ */
-.coming-soon-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1.5rem;
-}
-.cs-card {
-  background: var(--white);
-  border-radius: 12px;
-  padding: 2.5rem;
-  border: 2px solid var(--border);
-  position: relative;
-  transition: transform .3s, box-shadow .3s, border-color .3s;
-}
-.cs-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 48px rgba(0,0,0,.1);
-  border-color: var(--blue);
-}
-.cs-icon { font-size: 2rem; margin-bottom: 1rem; }
-.cs-card h3 {
-  font-family: 'Outfit', sans-serif;
-  font-size: 1.3rem;
-  font-weight: 800;
-  color: var(--black);
-  margin-bottom: .5rem;
-  letter-spacing: -.02em;
-  text-transform: uppercase;
-}
-.cs-card p { font-size: .88rem; color: var(--grey); line-height: 1.7; }
-.cs-badge {
-  position: absolute; top: 1.5rem; right: 1.5rem;
-  font-size: .6rem;
-  font-weight: 800;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  color: var(--blue);
-  background: rgba(131,58,180,.08);
-  padding: .3rem .8rem;
-  border-radius: 4px;
-  border: 1.5px solid rgba(131,58,180,.2);
-}
-
 /* ░░ RESPONSIVE ░░ */
 @media (max-width: 768px) {
   .auth-split { grid-template-columns: 1fr; min-height: 100vh; }
@@ -416,11 +276,6 @@ form { display: flex; flex-direction: column; gap: 1.1rem; }
   }
   .auth-form-inner { padding-top: 1rem; }
   .auth-top { margin-bottom: 1.75rem; }
-  .coming-soon-grid { grid-template-columns: 1fr; }
-
-  .dash-nav { padding: 0 1rem; gap: .5rem; }
-  .dash-nav .user-greeting { display: none; }
-  .dash-main { padding: 1.5rem 1rem; }
 }
 
 @media (max-width: 480px) {

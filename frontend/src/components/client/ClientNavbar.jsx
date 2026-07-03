@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
 
-export default function ClientNavbar({ onBrandClick, onLogout, notifications = [], onNotifClick }) {
+export default function ClientNavbar({ onBrandClick, notifications = [], onNotifClick }) {
   const navigate = useNavigate();
   const { logout } = useAuth();
   const [open, setOpen] = useState(false);
