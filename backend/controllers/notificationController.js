@@ -24,17 +24,6 @@ const getForClient = async (req, res) => {
   }
 };
 
-const markAllRead = async (req, res) => {
-  try {
-    const { client_id, for_agency } = req.body;
-    await notificationService.markAllRead(client_id, for_agency);
-    res.json({ success: true });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Erro ao marcar notificações' });
-  }
-};
-
 const markOneRead = async (req, res) => {
   try {
     const { id } = req.params;
@@ -46,4 +35,4 @@ const markOneRead = async (req, res) => {
   }
 };
 
-module.exports = { getForAgency, getForClient, markAllRead, markOneRead };
+module.exports = { getForAgency, getForClient, markOneRead };
