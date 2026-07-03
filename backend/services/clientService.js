@@ -76,4 +76,17 @@ const remove = async (id) => {
   return result.affectedRows > 0;
 };
 
-module.exports = { getAll, getById, create, update, remove, nameExists };
+const getMine = async (email) => {
+  const [rows] = await db.query(
+    `SELECT cl.*, COUNT(cc.id) AS card_count
+       FROM clients cl
+       LEFT JOIN content_cards cc ON cc.client_id = cl.id
+      WHERE cl.contact_email = ?
+      GROUP BY cl.id
+      ORDER BY cl.created_at DESC`,
+    [email]
+  );
+  return rows;
+};
+
+module.exports = { getAll, getById, create, update, remove, nameExists, getMine };
