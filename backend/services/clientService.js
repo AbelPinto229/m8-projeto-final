@@ -34,13 +34,14 @@ const nameExists = async (company_name) => {
 // POST /api/clients
 const create = async ({ company_name, contact_email, logo_url, social_networks, color }) => {
   const [result] = await db.query(
-    'INSERT INTO clients (company_name, contact_email, logo_url, social_networks, color) VALUES (?, ?, ?, ?, ?)',
+    'INSERT INTO clients (company_name, contact_email, logo_url, social_networks, color, status) VALUES (?, ?, ?, ?, ?, ?)',
     [
       company_name,
       contact_email || null,
       logo_url || null,
       social_networks || null,
       color || null,
+      'ativo',
     ]
   );
   return result.insertId;
