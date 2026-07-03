@@ -94,16 +94,7 @@ const remove = async (req, res) => {
 // GET /api/clients/mine — projetos do cliente autenticado (por email)
 const getMine = async (req, res) => {
   try {
-    const db = require('../db/connection');
-    const [rows] = await db.query(
-      `SELECT cl.*, COUNT(cc.id) AS card_count
-         FROM clients cl
-         LEFT JOIN content_cards cc ON cc.client_id = cl.id
-        WHERE cl.contact_email = ?
-        GROUP BY cl.id
-        ORDER BY cl.created_at DESC`,
-      [req.user.email]
-    );
+    const rows = await clientService.getMine(req.user.email);
     res.json(rows);
   } catch (err) {
     console.error(err);
