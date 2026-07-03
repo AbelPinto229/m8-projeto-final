@@ -476,6 +476,9 @@ em { font-style: normal; color: var(--blue); }
   object-position: center top;
   display: block;
 }
+.qs-member:last-child .qs-member__photo {
+  object-position: center 15%;
+}
 .qs-member__name {
   font-family: var(--font-b);
   font-size: .85rem;
@@ -961,6 +964,9 @@ em { font-style: normal; color: var(--blue); }
 
   .qs-top   { grid-template-columns: 1fr; }
   .qs-stats { flex-wrap: wrap; gap: 2rem; }
+
+  .qs-team { flex-direction: column; align-items: center; gap: 48px; }
+  .qs-member__photo { width: min(300px, 78vw); height: min(300px, 78vw); }
 
   .sv-list { grid-template-columns: 1fr; border-top: 2px solid var(--border); }
   .sv-item { border-right: none; }
