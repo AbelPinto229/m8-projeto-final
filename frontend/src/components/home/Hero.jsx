@@ -24,6 +24,9 @@ export default function Hero() {
       <div className="hero-noise" />
       <div className="hero-blob b1" ref={b1Ref} />
       <div className="hero-blob b2" ref={b2Ref} />
+      <div className="hero-photo">
+        <img src="/hero.jpg" alt="" />
+      </div>
       <div className="hero-content">
         <p className="hero-pre r">Marketing com propósito</p>
         {/* cada span tem classe .r para ser animado pelo ScrollReveal */}

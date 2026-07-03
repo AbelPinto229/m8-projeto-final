@@ -304,6 +304,33 @@ em { font-style: normal; color: var(--blue); }
   bottom: 60px; left: 120px;
 }
 
+.hero-photo {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 65%;
+  z-index: 0;
+  overflow: hidden;
+}
+.hero-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+.hero-photo::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 260px;
+  background: linear-gradient(to right, #fff 20%, transparent);
+  z-index: 1;
+}
+
 .hero-content { position: relative; z-index: 1; max-width: 900px; }
 .hero-pre {
   font-size: .72rem;
@@ -958,6 +985,7 @@ em { font-style: normal; color: var(--blue); }
   .hero { padding: 7rem 1.5rem 5rem; }
   .hero-foot { flex-direction: column; align-items: flex-start; gap: 1.5rem; }
   .hero-scroller { right: 1.5rem; }
+  .hero-photo { display: none; }
 
   .container { padding: 0 1.5rem; }
   .section   { padding: 5rem 0; }
