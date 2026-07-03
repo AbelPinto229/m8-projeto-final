@@ -54,20 +54,6 @@ export const getMyClients = async () => {
   return await response.json();
 };
 
-export const createClientUser = async (email, password, client_id, name) => {
-  const token = localStorage.getItem("token");
-  const response = await fetch(`${BASE_URL}/auth/create-client-user`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`
-    },
-    body: JSON.stringify({ email, password, client_id, name }),
-  });
-  const data = await response.json();
-  console.log(data);
-  return data;
-};
 
 export const updateClient = async (id, body) => {
   const token = localStorage.getItem("token");
@@ -286,19 +272,6 @@ export const getNotificationsForClient = async (client_id) => {
   return data;
 };
 
-export const markNotificationsRead = async (client_id, for_agency) => {
-  const token = localStorage.getItem("token");
-  const response = await fetch(`${BASE_URL}/notifications/read-all`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`
-    },
-    body: JSON.stringify({ client_id, for_agency }),
-  });
-  const data = await response.json();
-  console.log(data);
-};
 
 export const markNotificationRead = async (id) => {
   const token = localStorage.getItem("token");
@@ -313,16 +286,6 @@ export const markNotificationRead = async (id) => {
   console.log(data);
 };
 
-export const checkEmail = async (email) => {
-  const token = localStorage.getItem("token");
-  const response = await fetch(`${BASE_URL}/auth/check-email?email=${encodeURIComponent(email)}`, {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`
-    }
-  });
-  return response.json();
-};
 
 // contacto (rota pública)
 export const submitContact = async (body) => {

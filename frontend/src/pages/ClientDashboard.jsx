@@ -1,7 +1,7 @@
 // página do dashboard do cliente — visualização do kanban com aprovação e comentários
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getClientById, getCardsByClient, getCommentsByCard, createComment, deleteComment, updateCardStatus, getNotificationsForClient, markNotificationsRead, markNotificationRead, getMyClients } from '../services/api';
+import { getClientById, getCardsByClient, getCommentsByCard, createComment, deleteComment, updateCardStatus, getNotificationsForClient, markNotificationRead, getMyClients } from '../services/api';
 import ClientNavbar       from '../components/client/ClientNavbar';
 import ClientBoardHeader  from '../components/client/ClientBoardHeader';
 import ClientBoardColumn  from '../components/client/ClientBoardColumn';
@@ -168,7 +168,6 @@ function ClientDashboard() {
       {/* logo leva para a home, sair também redireciona para a home */}
       <ClientNavbar
         onBrandClick={() => navigate('/')}
-        onLogout={() => navigate('/')}
         notifications={notifications}
         onNotifClick={(n) => {
             markNotificationRead(n.id);

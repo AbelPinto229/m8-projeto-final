@@ -78,36 +78,6 @@ const register = async (req, res) => {
   }
 };
 
-// cria o utilizador de acesso para um cliente — chamado pela agência ao criar projeto
-const createClientUser = async (req, res) => {
-  try {
-    const { email, password, client_id, name } = req.body;
-
-    if (!email || !password || !client_id) {
-      return res.status(400).json({ error: 'Email, password e client_id são obrigatórios.' });
-    }
-
-    const exists = await authService.emailExists(email);
-    if (exists) {
-      return res.status(409).json({ error: 'Este email já está registado.' });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-    await authService.createUser(email, hashedPassword, 'client', client_id, name || null);
-
-    res.status(201).json({ message: 'Acesso do cliente criado com sucesso!' });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Erro interno do servidor.' });
-  }
-};
-
-const checkEmail = async (req, res) => {
-  const { email } = req.query;
-  if (!email) return res.status(400).json({ error: 'Email é obrigatório.' });
-  const exists = await authService.emailExists(email);
-  res.json({ exists });
-};
 
 const forgotPassword = async (req, res) => {
   try {
@@ -147,4 +117,4 @@ const resetPassword = async (req, res) => {
   }
 };
 
-module.exports = { login, register, createClientUser, checkEmail, forgotPassword, resetPassword };
+module.exports = { login, register, forgotPassword, resetPassword };
