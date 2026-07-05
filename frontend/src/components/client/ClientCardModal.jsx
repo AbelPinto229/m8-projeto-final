@@ -9,6 +9,7 @@ export default function ClientCardModal({
   setCommentForm,
   commentLoading,
   aiMetrics,
+  metrics,
   handleCloseModal,
   handleDeleteComment,
   handleCommentSubmit,
@@ -53,30 +54,58 @@ export default function ClientCardModal({
             }
             <p className="client-modal__body-text">{selectedCard.body}</p>
 
-            {/* previsão de métricas da ia — só aparece se existirem dados */}
-            {aiMetrics && (
-              <div className="client-modal__metrics">
-                <p className="client-modal__metrics-title">Previsão de métricas</p>
-                <div className="client-modal__metrics-grid">
-                  <div className="client-modal__metric-item">
-                    <span>Alcance</span>
-                    <strong>{aiMetrics.reach}</strong>
+            {/* previsão da ia e métricas reais lado a lado quando ambas existem;
+                se só existir a previsão, mantém-se como estava */}
+            {(aiMetrics || metrics) && (
+              <div className={`client-modal__metrics-wrapper${aiMetrics && metrics ? ' client-modal__metrics-wrapper--split' : ''}`}>
+                {aiMetrics && (
+                  <div className="client-modal__metrics">
+                    <p className="client-modal__metrics-title">Previsão da IA</p>
+                    <div className="client-modal__metrics-grid">
+                      <div className="client-modal__metric-item">
+                        <span>Alcance</span>
+                        <strong>{aiMetrics.reach}</strong>
+                      </div>
+                      <div className="client-modal__metric-item">
+                        <span>Likes</span>
+                        <strong>{aiMetrics.likes}</strong>
+                      </div>
+                      <div className="client-modal__metric-item">
+                        <span>Comentários</span>
+                        <strong>{aiMetrics.comments}</strong>
+                      </div>
+                      <div className="client-modal__metric-item">
+                        <span>Partilhas</span>
+                        <strong>{aiMetrics.shares}</strong>
+                      </div>
+                    </div>
+                    {aiMetrics.analysis && (
+                      <p className="client-modal__metric-analysis">{aiMetrics.analysis}</p>
+                    )}
                   </div>
-                  <div className="client-modal__metric-item">
-                    <span>Likes</span>
-                    <strong>{aiMetrics.likes}</strong>
+                )}
+                {metrics && (
+                  <div className="client-modal__metrics">
+                    <p className="client-modal__metrics-title">Métricas reais</p>
+                    <div className="client-modal__metrics-grid">
+                      <div className="client-modal__metric-item">
+                        <span>Alcance</span>
+                        <strong>{metrics.reach ?? '—'}</strong>
+                      </div>
+                      <div className="client-modal__metric-item">
+                        <span>Likes</span>
+                        <strong>{metrics.likes ?? '—'}</strong>
+                      </div>
+                      <div className="client-modal__metric-item">
+                        <span>Comentários</span>
+                        <strong>{metrics.comments_count ?? '—'}</strong>
+                      </div>
+                      <div className="client-modal__metric-item">
+                        <span>Partilhas</span>
+                        <strong>{metrics.shares ?? '—'}</strong>
+                      </div>
+                    </div>
                   </div>
-                  <div className="client-modal__metric-item">
-                    <span>Comentários</span>
-                    <strong>{aiMetrics.comments}</strong>
-                  </div>
-                  <div className="client-modal__metric-item">
-                    <span>Partilhas</span>
-                    <strong>{aiMetrics.shares}</strong>
-                  </div>
-                </div>
-                {aiMetrics.analysis && (
-                  <p className="client-modal__metric-analysis">{aiMetrics.analysis}</p>
                 )}
               </div>
             )}

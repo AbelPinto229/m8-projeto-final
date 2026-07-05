@@ -1,7 +1,7 @@
 // página do dashboard do cliente — visualização do kanban com aprovação e comentários
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getClientById, getCardsByClient, getCommentsByCard, createComment, deleteComment, updateCardStatus, getNotificationsForClient, markNotificationRead, getMyClients } from '../services/api';
+import { getClientById, getCardsByClient, getCommentsByCard, createComment, deleteComment, updateCardStatus, getNotificationsForClient, markNotificationRead, getMyClients, getMetricsByCard } from '../services/api';
 import ClientNavbar       from '../components/client/ClientNavbar';
 import ClientBoardHeader  from '../components/client/ClientBoardHeader';
 import ClientBoardColumn  from '../components/client/ClientBoardColumn';
@@ -24,6 +24,8 @@ function ClientDashboard() {
   const [selectedCard, setSelectedCard] = useState(null);
   // comentários do conteúdo aberto
   const [comments, setComments] = useState([]);
+  // métricas reais do conteúdo aberto — null se ainda não foram registadas pela agência
+  const [metrics, setMetrics] = useState(null);
   // dados do formulário de novo comentário
   // type fixo em 'comment' — o dropdown foi removido
   const [commentForm, setCommentForm] = useState({ message: '' });
@@ -83,14 +85,19 @@ function ClientDashboard() {
   const handleCardClick = async (card) => {
     setSelectedCard(card);
     setCommentForm({ message: '' });
-    const data = await getCommentsByCard(card.id);
-    setComments(data);
+    const [commentsData, metricsData] = await Promise.all([
+      getCommentsByCard(card.id),
+      getMetricsByCard(card.id),
+    ]);
+    setComments(commentsData);
+    setMetrics(metricsData);
   };
 
   // fecha o modal e limpa os dados
   const handleCloseModal = () => {
     setSelectedCard(null);
     setComments([]);
+    setMetrics(null);
   };
 
   // elimina um comentário e decrementa o contador no kanban
@@ -207,6 +214,7 @@ function ClientDashboard() {
           setCommentForm={setCommentForm}
           commentLoading={commentLoading}
           aiMetrics={aiMetrics}
+          metrics={metrics}
           handleCloseModal={handleCloseModal}
           handleDeleteComment={handleDeleteComment}
           handleCommentSubmit={handleCommentSubmit}

@@ -195,6 +195,12 @@
   margin-bottom: 16px;
 }
 
+.client-modal__metrics-wrapper--split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
 .client-modal__metrics {
   background: #f5f3ff;
   border: 1px solid #ddd6fe;
