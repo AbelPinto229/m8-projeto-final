@@ -26,4 +26,22 @@ const sendOTP = async (to, otp) => {
   });
 };
 
-module.exports = { sendOTP };
+const sendContactMessage = async ({ nome, email, servico, mensagem }) => {
+  await transporter.sendMail({
+    from: `"OffScroll Website" <${process.env.EMAIL_USER}>`,
+    to: process.env.EMAIL_USER,
+    replyTo: email,
+    subject: `Novo contacto de ${nome}${servico ? ` — ${servico}` : ''}`,
+    text: `Nome: ${nome}\nEmail: ${email}\nServiço: ${servico || '—'}\n\n${mensagem}`,
+    html: `
+      <h2>Novo contacto via website</h2>
+      <p><strong>Nome:</strong> ${nome}</p>
+      <p><strong>Email:</strong> <a href="mailto:${email}">${email}</a></p>
+      <p><strong>Serviço:</strong> ${servico || '—'}</p>
+      <hr/>
+      <p>${mensagem.replace(/\n/g, '<br/>')}</p>
+    `,
+  });
+};
+
+module.exports = { sendOTP, sendContactMessage };

@@ -24,17 +24,14 @@ const getByCard = async (req, res) => {
 // contact_email é opcional — quando vem preenchido é um comentário da agência
 const create = async (req, res) => {
   try {
-    const { card_id, client_id, message, type, contact_email } = req.body;
+    const { card_id, client_id, message, contact_email } = req.body;
 
     if (!card_id || !client_id || !message) {
       return res.status(400).json({ error: 'Dados em falta ou inválidos' });
     }
 
-    const validTypes = ['comment', 'suggestion'];
-    const commentType = validTypes.includes(type) ? type : 'comment';
-
     const id = await commentService.create({
-      card_id, client_id, message, type: commentType, contact_email,
+      card_id, client_id, message, type: 'comment', contact_email,
     });
 
     const now = new Date().toISOString();
@@ -42,7 +39,7 @@ const create = async (req, res) => {
     res.status(201).json({
       id,
       card_id, client_id, message,
-      type: commentType,
+      type: 'comment',
       contact_email: contact_email || null,
       created_at: now,
     });

@@ -9,7 +9,7 @@ export default function Login() {
 
   // busca a função login e o user atual do AuthContext
   // login → guarda token e user no localStorage
-  // user  → dados do utilizador autenticado (null se não estiver logado)
+  // user  → dados do utilizador autenticado 
   const { user, login } = useAuth();
 
   const [email, setEmail]       = useState('');
@@ -18,7 +18,7 @@ export default function Login() {
   const [alert, setAlert]       = useState(null);
   const [loading, setLoading]   = useState(false);
 
-  // se já existir um user no localStorage (sessão ativa), redireciona diretamente
+  // se já existir um user no localStorage , redireciona diretamente
   // evita que um utilizador já autenticado veja a página de login
   useEffect(() => {
     if (user) {

@@ -30,7 +30,7 @@ const create = async (req, res) => {
   try {
     const { client_id, title, body, image_url, social_network, scheduled_date, review_deadline } = req.body;
 
-    if (!client_id || !title || !body || !social_network || !scheduled_date) {
+    if (!client_id || !title || !body || !social_network || !scheduled_date || !review_deadline) {
       return res.status(400).json({ error: 'Dados em falta ou inválidos' });
     }
 
@@ -67,7 +67,7 @@ const update = async (req, res) => {
   try {
     const { title, body, image_url, social_network, scheduled_date, review_deadline } = req.body;
 
-    if (!title || !body || !social_network || !scheduled_date) {
+    if (!title || !body || !social_network || !scheduled_date || !review_deadline) {
       return res.status(400).json({ error: 'Dados em falta ou inválidos' });
     }
 
